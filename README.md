@@ -1,5 +1,4 @@
 # ChainShift
-<<<<<<< HEAD
 
 ChainShift is a crypto-native procedural game built entirely through code.  
 It renders a shared abstract world using deterministic, 4K-capable raymarching shaders, where the state of the world is designed to evolve through on-chain parameters rather than static assets or server-controlled logic.
@@ -140,7 +139,9 @@ This repository represents an execution-focused prototype, not a finished produc
 
 ## License
 
-MIT License.                                     ---
+MIT License.
+
+---
 
 ## 6-Week Execution Plan (Avalanche Build Games)
 
@@ -203,6 +204,3 @@ ChainShift is intentionally scoped to align with the 6-week Avalanche Build Game
 - Submission and showcase
 
 **Deliverable:** Final demo, codebase, and pitch
-=======
-ChainShift is a crypto-native procedural game where a shared abstract world evolves through deterministic, code-only graphics. The world state is designed to be driven on-chain and visualized in real time using 4K-capable raymarching shaders.
->>>>>>> 3378b37d10e587c96b4391a64f8e41cc1ce56c65
