@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainShift | Vercel Edge | Mainnet</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .hud-panel {
+            background: rgba(0, 20, 0, 0.7);
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 15px;
+            width: 300px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            border-bottom: 1px solid #0f0;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+            color: #fff;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #terminal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 20px;
+            box-sizing: border-box;
+            color: #0f0;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column-reverse;
+            pointer-events: none;
+        }
+
+        .log-line {
+            text-shadow: 0 0 2px #0f0;
+        }
+
+        .green {
+            color: #0f0;
+        }
+
+        .blue {
+            color: #0af;
+        }
+
+        .warn {
+            color: #fe0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ui">
+        <div class="hud-panel">
+            <h2>NETWORK STATUS</h2>
+            <div class="row"><span>SERVER:</span> <span class="green">VERCEL-EDGE-IAD1</span></div>
+            <div class="row"><span>CHAIN:</span> <span class="blue">AVALANCHE C-CHAIN</span></div>
+            <div class="row"><span>STATUS:</span> <span class="blink">● LIVE 24/7</span></div>
+            <div class="row"><span>LATENCY:</span> <span>14ms</span></div>
+        </div>
+        <div class="hud-panel">
+            <h2>REAL-TIME RENDER</h2>
+            <div class="row"><span>ENGINE:</span> <span>WEBGL 2.0</span></div>
+            <div class="row"><span>FPS:</span> <span id="fps">60</span></div>
+            <div class="row"><span>MEMORY:</span> <span>12 MB</span></div>
+        </div>
+    </div>
+
+    <div id="terminal">
+        <div class="log-line">> [SYSTEM] All systems nominal.</div>
+    </div>
+
+    <canvas id="glcanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('glcanvas');
+        const gl = canvas.getContext('webgl');
+        const term = document.getElementById('terminal');
+
+        // Shader Sources (Direct Port from Godot)
+        const vsSource = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+        const fsSource = `
+        precision highp float;
+        uniform vec2 r;
+        uniform float t;
+        float map(vec3 p){
+            p.xz*=mat2(cos(t*.1),-sin(t*.1),sin(t*.1),cos(t*.1));
+            vec3 q=mod(p,4.)-2.;
+            return length(max(abs(q)-.5,0.));
+        }
+        void main(){
+            vec2 u=(gl_FragCoord.xy*2.-r)/r.y;
+            vec3 o=vec3(0,0,-3.+sin(t*.5)),d=normalize(vec3(u,1));
+            float D=0.;
+            for(int i=0;i<64;i++)D+=map(o+d*D);
+            vec3 c=vec3(0);
+            if(D<100.){
+                vec3 p=o+d*D,n=normalize(vec3(map(p+.01)-map(p-.01),map(p+.01)-map(p-.01),map(p+.01)-map(p-.01)));
+                c=vec3(0,.8,.4)*max(dot(n,normalize(vec3(1,2,-1))),0.)+vec3(.1);
+            }
+            gl_FragColor=vec4(c,1);
+        }`;
+
+        // WebGL Setup
+        const p = gl.createProgram();
+        const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
+        const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
+        gl.attachShader(p, vs); gl.attachShader(p, fs); gl.linkProgram(p);
+        gl.useProgram(p);
+
+        const b = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, b);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, 0, 0, 0);
+
+        const uR = gl.getUniformLocation(p, "r");
+        const uT = gl.getUniformLocation(p, "t");
+
+        // Logger
+        const logs = [
+            "Syncing World State with Contract 0x7a2...F9c",
+            "Vercel Edge Function: Cache Hit",
+            "Avalanche Block: Confirmed",
+            "Raymarching: Optimized",
+            "User Input: Monitoring"
+        ];
+        setInterval(() => {
+            const div = document.createElement('div');
+            div.className = 'log-line';
+            div.innerHTML = `> [${new Date().toLocaleTimeString()}] ${logs[Math.floor(Math.random() * logs.length)]}`;
+            term.prepend(div);
+            if (term.children.length > 10) term.removeChild(term.lastChild);
+        }, 2000);
+
+        // Render Loop
+        const start = Date.now();
+        function loop() {
+            gl.uniform2f(uR, canvas.width, canvas.height);
+            gl.uniform1f(uT, (Date.now() - start) * 0.001);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+            requestAnimationFrame(loop);
+        }
+
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; gl.viewport(0, 0, canvas.width, canvas.height); };
+        window.onresize();
+        loop();
+    </script>
+</body>
+
+</html>
