@@ -1,0 +1,10 @@
+# Vercel Ignore File
+# Exclude Godot source files to prevent build errors
+# Only allow HTML, JS, JSON, and CSS (if any)
+
+*.godot
+*.gd
+*.tscn
+*.tres
+.import/
+export_presets.cfg
