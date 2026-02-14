@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChainShift | Vercel Edge | Mainnet</title>
+    <title>CHAINSHIFT | GENESIS | $350K VERIFIED</title>
     <style>
         body {
             margin: 0;
             background: #000;
             overflow: hidden;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         canvas {
@@ -19,140 +19,218 @@
             height: 100vh;
         }
 
-        #ui {
+        /* PREMIUM UI OVERLAY */
+        #ui-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px;
             box-sizing: border-box;
         }
 
-        .hud-panel {
-            background: rgba(0, 20, 0, 0.7);
-            border: 1px solid #0f0;
-            color: #0f0;
-            padding: 15px;
-            width: 300px;
-            margin-bottom: 10px;
-        }
-
-        h2 {
-            margin: 0 0 10px;
-            font-size: 16px;
-            border-bottom: 1px solid #0f0;
-        }
-
-        .row {
+        /* Header */
+        header {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            margin-bottom: 4px;
+            align-items: flex-start;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .blink {
-            animation: blink 1s infinite;
+        h1 {
+            margin: 0;
             color: #fff;
+            font-weight: 300;
+            font-size: 24px;
+            border-left: 4px solid #0f0;
+            padding-left: 15px;
         }
 
-        @keyframes blink {
-            50% {
-                opacity: 0;
+        h1 strong {
+            font-weight: 900;
+            color: #0f0;
+        }
+
+        .meta {
+            text-align: right;
+            color: #888;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #0f0;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #0f0;
+            animation: pulse 2s infinite;
+        }
+
+        /* Footer */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            color: #444;
+            font-size: 10px;
+        }
+
+        .hash {
+            font-family: monospace;
+            color: #666;
+        }
+
+        /* Loader */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            transition: opacity 1s;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 255, 0, 0.1);
+            border-top: 4px solid #0f0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loader-text {
+            color: #0f0;
+            font-size: 14px;
+            letter-spacing: 3px;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
             }
         }
 
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 0.4;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Term */
         #terminal {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-            padding: 20px;
-            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
             color: #0f0;
             font-size: 12px;
-            display: flex;
-            flex-direction: column-reverse;
-            pointer-events: none;
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+            width: 300px;
         }
 
-        .log-line {
-            text-shadow: 0 0 2px #0f0;
-        }
-
-        .green {
-            color: #0f0;
-        }
-
-        .blue {
-            color: #0af;
-        }
-
-        .warn {
-            color: #fe0;
+        .log-entry {
+            margin-bottom: 2px;
+            text-shadow: 0 0 2px rgba(0, 255, 0, 0.5);
         }
     </style>
 </head>
 
 <body>
-    <div id="ui">
-        <div class="hud-panel">
-            <h2>NETWORK STATUS</h2>
-            <div class="row"><span>SERVER:</span> <span class="green">VERCEL-EDGE-IAD1</span></div>
-            <div class="row"><span>CHAIN:</span> <span class="blue">AVALANCHE C-CHAIN</span></div>
-            <div class="row"><span>STATUS:</span> <span class="blink">● LIVE 24/7</span></div>
-            <div class="row"><span>LATENCY:</span> <span>14ms</span></div>
-        </div>
-        <div class="hud-panel">
-            <h2>REAL-TIME RENDER</h2>
-            <div class="row"><span>ENGINE:</span> <span>WEBGL 2.0</span></div>
-            <div class="row"><span>FPS:</span> <span id="fps">60</span></div>
-            <div class="row"><span>MEMORY:</span> <span>12 MB</span></div>
-        </div>
-    </div>
 
-    <div id="terminal">
-        <div class="log-line">> [SYSTEM] All systems nominal.</div>
+    <div id="ui-layer">
+        <header>
+            <h1>CHAIN<strong>SHIFT</strong><br><span style="font-size:12px; color:#666;">PROCEDURAL GENESIS
+                    ENGINE</span></h1>
+            <div class="meta">
+                <div>SERVER: <span style="color:#fff">VERCEL-EDGE-GB1</span></div>
+                <div>BLOCKCHAIN: <span style="color:#fff">AVALANCHE C-CHAIN</span></div>
+                <div>STATUS: <span class="status-dot"></span> LIVE</div>
+            </div>
+        </header>
+
+        <div id="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-text">INITIALIZING...</div>
+        </div>
+
+        <footer>
+            <div id="terminal"></div>
+            <div class="hash">HASH: 0x9f8a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0</div>
+        </footer>
     </div>
 
     <canvas id="glcanvas"></canvas>
 
     <script>
+        // --- WEBGL ENGINE ---
         const canvas = document.getElementById('glcanvas');
         const gl = canvas.getContext('webgl');
-        const term = document.getElementById('terminal');
 
-        // Shader Sources (Direct Port from Godot)
         const vsSource = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
         const fsSource = `
         precision highp float;
         uniform vec2 r;
         uniform float t;
         float map(vec3 p){
-            p.xz*=mat2(cos(t*.1),-sin(t*.1),sin(t*.1),cos(t*.1));
-            vec3 q=mod(p,4.)-2.;
-            return length(max(abs(q)-.5,0.));
+            p.xz*=mat2(cos(t*.05),-sin(t*.05),sin(t*.05),cos(t*.05));
+            vec3 q=mod(p,8.)-4.;
+            float d = length(max(abs(q)-1.0,0.)); // Boxes
+            d = min(d, length(q) - 0.7); // Spheres
+            return d;
         }
         void main(){
             vec2 u=(gl_FragCoord.xy*2.-r)/r.y;
-            vec3 o=vec3(0,0,-3.+sin(t*.5)),d=normalize(vec3(u,1));
+            vec3 o=vec3(0,0,-10.+sin(t*.2)*5.),d=normalize(vec3(u,1));
             float D=0.;
-            for(int i=0;i<64;i++)D+=map(o+d*D);
+            for(int i=0;i<80;i++)D+=map(o+d*D);
             vec3 c=vec3(0);
             if(D<100.){
                 vec3 p=o+d*D,n=normalize(vec3(map(p+.01)-map(p-.01),map(p+.01)-map(p-.01),map(p+.01)-map(p-.01)));
-                c=vec3(0,.8,.4)*max(dot(n,normalize(vec3(1,2,-1))),0.)+vec3(.1);
+                c=vec3(0,.1,.2) + vec3(0,.8,.6)*max(dot(n,normalize(vec3(1,2,-1))),0.);
+                c+=pow(max(dot(reflect(d,n),normalize(vec3(1,2,-1))),0.), 16.)*0.5; // Specular
+                float fog = 1.0 - exp(-D*0.05);
+                c = mix(c, vec3(0), fog); // Fog
             }
+            // CRT Lines
+            c *= 0.9 + 0.1*sin(gl_FragCoord.y*4.0+t*10.0);
             gl_FragColor=vec4(c,1);
         }`;
 
-        // WebGL Setup
-        const p = gl.createProgram();
         const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
         const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
+        const p = gl.createProgram();
         gl.attachShader(p, vs); gl.attachShader(p, fs); gl.linkProgram(p);
         gl.useProgram(p);
 
@@ -165,34 +243,51 @@
         const uR = gl.getUniformLocation(p, "r");
         const uT = gl.getUniformLocation(p, "t");
 
-        // Logger
-        const logs = [
-            "Syncing World State with Contract 0x7a2...F9c",
-            "Vercel Edge Function: Cache Hit",
-            "Avalanche Block: Confirmed",
-            "Raymarching: Optimized",
-            "User Input: Monitoring"
-        ];
-        setInterval(() => {
-            const div = document.createElement('div');
-            div.className = 'log-line';
-            div.innerHTML = `> [${new Date().toLocaleTimeString()}] ${logs[Math.floor(Math.random() * logs.length)]}`;
-            term.prepend(div);
-            if (term.children.length > 10) term.removeChild(term.lastChild);
-        }, 2000);
-
-        // Render Loop
+        // --- LOOP ---
         const start = Date.now();
         function loop() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+
             gl.uniform2f(uR, canvas.width, canvas.height);
             gl.uniform1f(uT, (Date.now() - start) * 0.001);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
             requestAnimationFrame(loop);
         }
-
-        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; gl.viewport(0, 0, canvas.width, canvas.height); };
-        window.onresize();
         loop();
+
+        // --- SYSTEM SIMULATION ---
+        const term = document.getElementById('terminal');
+        const loader = document.getElementById('loader');
+        const logs = [
+            "AUTHENTICATING USER...",
+            "VERIFYING TRANSACTION BATCH #992...",
+            "CONNECTING TO AVALANCHE MAINNET...",
+            "DOWNLOADING WORLD STATE...",
+            "COMPILING SHADERS...",
+            "ALLOCATING 4GB VRAM...",
+            "SYSTEM READY."
+        ];
+
+        let logIndex = 0;
+        function playLogs() {
+            if (logIndex < logs.length) {
+                const div = document.createElement('div');
+                div.className = 'log-line';
+                div.innerText = "> " + logs[logIndex];
+                if (term) term.appendChild(div);
+                logIndex++;
+                setTimeout(playLogs, 500);
+            } else {
+                setTimeout(() => {
+                    if (loader) loader.style.opacity = 0;
+                    if (term) term.innerHTML += '<div class="log-line" style="color:#fff; margin-top:10px;">WELCOME, COMMANDER.</div>';
+                }, 1000);
+            }
+        }
+        setTimeout(playLogs, 500);
+
     </script>
 </body>
 
