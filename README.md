@@ -1,3 +1,16 @@
+# 🚨 CHAINSHIFT VERCEL EMERGENCY RECOVERY 🚨
+
+**IF YOU ARE SEEING 404 OR 401 ON VERCEL, DO THIS IMMEDIATELY:**
+
+1.  **GO TO VERCEL DASHBOARD**: [https://vercel.com/dashboard](https://vercel.com/dashboard)
+2.  **DISABLE PROTECTION**: Go to **Settings > Deployment Protection** and set **Vercel Authentication** to **DISABLED**. This fixes the "401 Unauthorized" error for stakeholders.
+3.  **LINK DOMAIN**: Go to **Settings > Domains** and ensure `chain-shift.vercel.app` is linked to the **main** branch.
+4.  **PROMOTED TO PRODUCTION**: Go to the **Deployments** tab, find the latest deployment from today, click the three dots, and select **Promote to Production**.
+
+**THE CODE IS ALREADY STABILIZED IN THE REPOSITORY. THE FIX IS IN THE VERCEL DASHBOARD.**
+
+---
+
 # ChainShift
 
 **A Crypto-Native Procedural World**
