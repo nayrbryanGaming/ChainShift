@@ -2,6 +2,7 @@
     "name": "chainshift",
     "version": "1.0.0",
     "scripts": {
+        "build": "mkdir public; cp index.html public/index.html",
         "start": "serve ."
     },
     "dependencies": {
