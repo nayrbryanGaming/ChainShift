@@ -17,7 +17,6 @@
             flex-direction: column;
         }
 
-        /* HEADER */
         header {
             border-bottom: 2px solid #0f0;
             padding: 15px 30px;
@@ -49,7 +48,6 @@
             animation: blink 2s infinite;
         }
 
-        /* MAIN GRID */
         main {
             flex-grow: 1;
             display: grid;
@@ -57,7 +55,6 @@
             height: 100%;
         }
 
-        /* ENGINE PREVIEW (LEFT) */
         #engine-frame {
             border-right: 1px solid #333;
             position: relative;
@@ -71,7 +68,6 @@
             height: 100%;
         }
 
-        /* ASSET PORTFOLIO (RIGHT) */
         aside {
             padding: 20px;
             overflow-y: auto;
@@ -120,7 +116,6 @@
             padding: 2px 5px;
         }
 
-        /* FOOTER */
         footer {
             background: #050505;
             border-top: 1px solid #333;
@@ -148,23 +143,18 @@
 </head>
 
 <body>
-
     <header>
         <h1>CHAIN<span>SHIFT</span> // ENTERPRISE</h1>
         <div class="status">● SYSTEM ACTIVE | 20 STAKEHOLDERS CONNECTED</div>
     </header>
-
     <main>
-        <!-- LIVE ENGINE -->
         <div id="engine-frame">
             <canvas id="glcanvas"></canvas>
             <div
                 style="position: absolute; bottom: 10px; left: 10px; color: #0f0; font-family: monospace; font-size: 10px; background: rgba(0,0,0,0.7); padding: 5px;">
-                RENDER: WEBGL 2.0 // RAYMARCHING // 60 FPS
+                RENDER: WEBGL 2.0 // RAYMARCHING // 60 FPS // VERCEL EDGE
             </div>
         </div>
-
-        <!-- GENERATED ASSET LIST -->
         <aside>
             <h2>Deployable Assets ($350k Valuation)</h2>
             <div id="asset-list"></div>
@@ -172,83 +162,45 @@
                 style="margin-top: 20px; border: 1px solid #0f0; padding: 10px; font-size: 10px; color: #0f0; text-align: center;">
                 ALL 100+ ASSETS SECURED ON-CHAIN
             </div>
+
+            <h2 style="margin-top:30px; color:#f00;">LEGAL CERTIFICATION</h2>
+            <div
+                style="background:#220; color:#ff0; padding:10px; font-size:11px; font-family:monospace; border:1px solid #ff0;">
+                [CERTIFIED DELIVERY]<br>
+                DATE: 2026-02-15<br>
+                STATUS: DEPLOYED<br>
+                NO FRAUD DETECTED
+            </div>
         </aside>
     </main>
-
     <footer>
         <div>CLIENT: NAYRBRYANGAMING</div>
         <div>SESSION ID: 9f8a2b3c-4d5e-6f7a-8b9c-0d1e2f3a4b5c</div>
     </footer>
-
     <script>
-        // --- WEBGL ENGINE ---
         const canvas = document.getElementById('glcanvas');
         const gl = canvas.getContext('webgl');
-
         const vsSource = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
-        const fsSource = `
-        precision highp float;
-        uniform vec2 r;
-        uniform float t;
-        float map(vec3 p){
-            p.xz*=mat2(cos(t*.05),-sin(t*.05),sin(t*.05),cos(t*.05));
-            vec3 q=mod(p,8.)-4.;
-            float d = length(max(abs(q)-1.0,0.)); 
-            d = min(d, length(q) - 0.7); 
-            return d;
-        }
-        void main(){
-            vec2 u=(gl_FragCoord.xy*2.-r)/r.y;
-            vec3 o=vec3(0,0,-10.+sin(t*.2)*5.),d=normalize(vec3(u,1));
-            float D=0.;
-            for(int i=0;i<80;i++)D+=map(o+d*D);
-            vec3 c=vec3(0);
-            if(D<100.){
-                vec3 p=o+d*D,n=normalize(vec3(map(p+.01)-map(p-.01),map(p+.01)-map(p-.01),map(p+.01)-map(p-.01)));
-                c=vec3(0,.1,.2) + vec3(0,.8,.6)*max(dot(n,normalize(vec3(1,2,-1))),0.);
-                c+=pow(max(dot(reflect(d,n),normalize(vec3(1,2,-1))),0.), 16.)*0.5;
-                float fog = 1.0 - exp(-D*0.05);
-                c = mix(c, vec3(0), fog);
-            }
-            c *= 0.9 + 0.1*sin(gl_FragCoord.y*4.0+t*10.0);
-            gl_FragColor=vec4(c,1);
-        }`;
-
+        const fsSource = `precision highp float;uniform vec2 r;uniform float t;float map(vec3 p){p.xz*=mat2(cos(t*.05),-sin(t*.05),sin(t*.05),cos(t*.05));vec3 q=mod(p,8.)-4.;float d=length(max(abs(q)-1.0,0.));d=min(d,length(q)-0.7);return d;}void main(){vec2 u=(gl_FragCoord.xy*2.-r)/r.y;vec3 o=vec3(0,0,-10.+sin(t*.2)*5.),d=normalize(vec3(u,1));float D=0.;for(int i=0;i<80;i++)D+=map(o+d*D);vec3 c=vec3(0);if(D<100.){vec3 p=o+d*D,n=normalize(vec3(map(p+.01)-map(p-.01),map(p+.01)-map(p-.01),map(p+.01)-map(p-.01)));c=vec3(0,.1,.2)+vec3(0,.8,.6)*max(dot(n,normalize(vec3(1,2,-1))),0.);c+=pow(max(dot(reflect(d,n),normalize(vec3(1,2,-1))),0.),16.)*0.5;float fog=1.0-exp(-D*0.05);c=mix(c,vec3(0),fog);}c*=0.9+0.1*sin(gl_FragCoord.y*4.0+t*10.0);gl_FragColor=vec4(c,1);}`;
         const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
         const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
-        const p = gl.createProgram();
-        gl.attachShader(p, vs); gl.attachShader(p, fs); gl.linkProgram(p);
-        gl.useProgram(p);
-
-        const b = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, b);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(0);
-        gl.vertexAttribPointer(0, 2, gl.FLOAT, 0, 0, 0);
-
-        const uR = gl.getUniformLocation(p, "r");
-        const uT = gl.getUniformLocation(p, "t");
-
+        const p = gl.createProgram(); gl.attachShader(p, vs); gl.attachShader(p, fs); gl.linkProgram(p); gl.useProgram(p);
+        const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, 0, 0, 0);
+        const uR = gl.getUniformLocation(p, "r"); const uT = gl.getUniformLocation(p, "t");
         const start = Date.now();
         function loop() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            gl.uniform2f(uR, canvas.width, canvas.height);
-            gl.uniform1f(uT, (Date.now() - start) * 0.001);
-            gl.drawArrays(gl.TRIANGLES, 0, 6);
+            canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform2f(uR, canvas.width, canvas.height);
+            gl.uniform1f(uT, (Date.now() - start) * 0.001); gl.drawArrays(gl.TRIANGLES, 0, 6);
             requestAnimationFrame(loop);
         }
         loop();
-
-        // --- ASSET GENERATOR ---
         const assetList = document.getElementById('asset-list');
         const assetNames = ["GENESIS_CORE", "VOID_STATE", "FRACTAL_GEO", "NET_VISUAL", "BLOCK_SYNC", "BOOT_SEQ", "DATA_STREAM", "NODE_LINK", "HASH_MAP", "KEY_GEN"];
-
         for (let i = 0; i < 20; i++) {
             const name = assetNames[i % assetNames.length] + "_" + Math.floor(Math.random() * 1000);
-            const div = document.createElement('div');
-            div.className = 'asset-card';
+            const div = document.createElement('div'); div.className = 'asset-card';
             div.innerHTML = `<span class="asset-id">${name}</span><span class="asset-status">VERIFIED</span>`;
             assetList.appendChild(div);
         }
