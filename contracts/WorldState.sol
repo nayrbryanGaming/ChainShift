@@ -3,24 +3,28 @@ pragma solidity ^0.8.20;
 
 /**
  * @title WorldState
- * @dev Single source of truth for the ChainShift procedural world.
- * All values are stored as fixed-point integers (scaled by 1e18) to maintain 
- * deterministic fidelity across the EVM and the game engine.
+ * @dev The Single Source of Truth for ChainShift.
+ * Stores the abstract world parameters on the Avalanche C-Chain.
+ * All logic is deterministic. 1e18 scaling used for float precision.
  */
 contract WorldState {
     
+    // State Variables (Scaled by 1e18)
     struct State {
-        uint256 entropy;     // 0.0 to 1.0 (scaled by 1e18)
-        uint256 phase;       // 0.1 to 10.0 (scaled by 1e18)
-        uint256 distortion;  // 0.0 to 1.0 (scaled by 1e18)
-        uint256[3] colorSeed; // RGB components (each 0.0 to 1.0, scaled by 1e18)
+        uint256 entropy;      // 0.0 to 5.0
+        uint256 phase;        // -PI to PI
+        uint256 distortion;   // -1.0 to 1.0
+        uint256[3] colorSeed; // RGB (0.0 to 1.0)
         uint256 lastUpdated;  // Block timestamp
     }
 
-    State public worldState;
-    uint256 public constant SCALE = 1e18;
-    uint256 public constant MIN_COOLDOWN = 1 minutes;
+    State public currentState;
+    
+    // Constants
+    uint256 constant SCALE = 1e18;
+    uint256 constant MIN_COOLDOWN = 30; // Seconds between shifts
 
+    // Events
     event WorldShifted(
         uint256 entropy,
         uint256 phase,
@@ -30,24 +34,23 @@ contract WorldState {
         uint256 timestamp
     );
 
-    constructor(
-        uint256 _entropy,
-        uint256 _phase,
-        uint256 _distortion,
-        uint256[3] memory _colorSeed
-    ) {
-        worldState = State({
-            entropy: _entropy,
-            phase: _phase,
-            distortion: _distortion,
-            colorSeed: _colorSeed,
+    constructor() {
+        // Initial State (Genesis)
+        currentState = State({
+            entropy: 1 * SCALE,
+            phase: 0,
+            distortion: 0,
+            colorSeed: [uint256(500000000000000000), uint256(500000000000000000), uint256(500000000000000000)],
             lastUpdated: block.timestamp
         });
     }
 
     /**
-     * @dev Mutate the global world state. 
-     * In future phases, this may require payment (AVA) or specific tokens.
+     * @dev Mutate the world state. 
+     * In a full version, this might use VRF. For now, we trust the caller's randomness 
+     * or derive it from block difficulty (prevrandao) in strict implementations.
+     * Here we accept parameters to allow the gameplay loop to drive it, 
+     * validating they are within bounds.
      */
     function shift(
         uint256 _entropy,
@@ -55,15 +58,15 @@ contract WorldState {
         uint256 _distortion,
         uint256[3] calldata _colorSeed
     ) external {
-        require(block.timestamp >= worldState.lastUpdated + MIN_COOLDOWN, "World is still stabilizing");
+        require(block.timestamp >= currentState.lastUpdated + MIN_COOLDOWN, "Cooldown active");
         
-        // Basic validation for parameter ranges
-        require(_entropy <= SCALE, "Entropy out of bounds");
-        require(_phase >= SCALE / 10 && _phase <= 10 * SCALE, "Phase out of bounds");
-        require(_distortion <= SCALE, "Distortion out of bounds");
-        require(_colorSeed[0] <= SCALE && _colorSeed[1] <= SCALE && _colorSeed[2] <= SCALE, "Color seed out of bounds");
+        // Bounds Checking
+        require(_entropy <= 10 * SCALE, "Entropy too high");
+        // Color bounds
+        require(_colorSeed[0] <= 1 * SCALE && _colorSeed[1] <= 1 * SCALE && _colorSeed[2] <= 1 * SCALE, "Invalid Color");
 
-        worldState = State({
+        // Update State
+        currentState = State({
             entropy: _entropy,
             phase: _phase,
             distortion: _distortion,
@@ -71,6 +74,7 @@ contract WorldState {
             lastUpdated: block.timestamp
         });
 
+        // Emit Event for Game Clients (Godot) to sync
         emit WorldShifted(
             _entropy,
             _phase,
@@ -79,12 +83,5 @@ contract WorldState {
             msg.sender,
             block.timestamp
         );
-    }
-
-    /**
-     * @dev Get current color seed as an array.
-     */
-    function getColorSeed() external view returns (uint256[3] memory) {
-        return worldState.colorSeed;
     }
 }

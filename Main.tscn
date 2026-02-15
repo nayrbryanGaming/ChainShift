@@ -1,47 +1,45 @@
-[gd_scene load_steps=4 format=3 uid="uid://d1gph7x1v2m5"]
+[gd_scene load_steps=6 format=3 uid="uid://b8j4k5l6m7n8"]
 
-[ext_resource type="Shader" path="res://world.gdshader" id="1_shader"]
-[ext_resource type="Script" path="res://main.gd" id="2_script"]
+[ext_resource type="Script" path="res://main.gd" id="1_script"]
+[ext_resource type="Shader" path="res://world.gdshader" id="2_shader"]
+[ext_resource type="Script" path="res://blockchain_manager.gd" id="3_bm"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_x1"]
-shader = ExtResource("1_shader")
-shader_parameter/u_entropy = 0.5
-shader_parameter/u_phase = 1.0
-shader_parameter/u_distortion = 0.2
-shader_parameter/u_shift_intensity = 0.0
-shader_parameter/u_color_seed = Vector3(0.2, 0.5, 0.8)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_world"]
+shader = ExtResource("2_shader")
+shader_parameter/u_entropy = 1.0
+shader_parameter/u_phase = 0.0
+shader_parameter/u_distortion = 0.0
+shader_parameter/u_color_seed = Vector3(1, 1, 1)
 shader_parameter/u_time = 0.0
+shader_parameter/u_impulse = 0.0
 
-[node name="Main" type="Node"]
-script = ExtResource("2_script")
-
-[node name="ShaderRect" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_x1")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(1, 1, 1, 0)
-
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
-timeout = 10.0
-
-[node name="DebugUI" type="Control" parent="."]
+[node name="Main" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+script = ExtResource("1_script")
 
-[node name="Label" type="Label" parent="DebugUI"]
+[node name="WorldRenderer" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_world")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="DebugLabel" type="Label" parent="."]
 layout_mode = 0
-offset_left = 30.0
-offset_top = 30.0
-offset_right = 430.0
-offset_bottom = 90.0
-theme_override_font_sizes/font_size = 18
-text = "CHAINSHIFT | INITIALIZING..."
-vertical_alignment = 1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 300.0
+offset_bottom = 46.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.5)
+text = "CHAINSHIFT // PHASE 4"
+
+[node name="BlockchainManager" type="Node" parent="."]
+script = ExtResource("3_bm")
