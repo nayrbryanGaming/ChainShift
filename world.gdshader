@@ -1,28 +1,22 @@
 shader_type canvas_item;
 
 // ==============================================================================
-// CHAINSHIFT - NUCLEAR BUILD :: GOLD MASTER
+// CHAINSHIFT - NUCLEAR BUILD :: PHASE 1 FOUNDATION
 // ==============================================================================
 // Pure procedural world rendered via Raymarching.
-// No external assets. 4K compliant. Resolution independent.
+// No external assets. 4K compliant. 60 FPS target.
 // ==============================================================================
 
-// MANDATORY GLOBAL STATE UNIFORMS
 uniform float u_entropy;      // Chaos factor
-uniform float u_phase;        // Evolution time/angle
+uniform float u_phase;        // Evolution angle
 uniform float u_distortion;   // Spatial warping
 uniform vec3  u_color_seed;   // Base color palette
 uniform float u_time;         // Engine time
-uniform float u_impulse;      // Interaction feedback (0.0 to 1.0)
 
 // CONSTANTS
 const int MAX_STEPS = 128;
 const float MAX_DIST = 100.0;
 const float SURF_DIST = 0.001;
-
-// ==============================================================================
-// MATH & SDF PRIMITIVES
-// ==============================================================================
 
 mat2 rot(float a) {
     float s = sin(a);
@@ -30,49 +24,39 @@ mat2 rot(float a) {
     return mat2(vec2(c, -s), vec2(s, c));
 }
 
-// Deterministic Noise
+// Deterministic Noise for Film Grain/Detail
 float noise(vec3 p) {
     return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
-// Signed Distance Function: Abstract Fractal Structure
+// Phase 1 SDF: Mathematical Core
 float map(vec3 p) {
     vec3 q = p;
     
-    // 1. Domain Repetition (Infinite World)
-    vec3 id = floor((p + 2.0) / 4.0);
-    p = mod(p + 2.0, 4.0) - 2.0;
+    // Domain Repetition
+    p = mod(p + 4.0, 8.0) - 4.0;
     
-    // 2. Phase Rotation
-    p.xz *= rot(u_phase * 0.5 + id.x * 0.1);
-    p.xy *= rot(u_time * 0.1);
+    // Rotations
+    p.xz *= rot(u_phase + u_time * 0.1);
+    p.xy *= rot(u_phase * 0.5);
     
-    // 3. Distortion (Entropy-driven)
-    float d1 = length(p) - 1.0; // Base Sphere
+    // Fractal Folding (Symmetry and Complexity)
+    float d = length(p) - 1.2;
+    float scale = 1.0;
     
-    // Impulse Warp (Phase 2 Add)
-    p += sin(p.y * 10.0 + u_time * 5.0) * 0.1 * u_impulse;
-
-    // Fractal-like folding
-    float amp = 0.5;
-    for(int i = 0; i < 3; i++) {
+    for(int i = 0; i < 4; i++) {
         p = abs(p) - 0.5 * u_entropy;
-        p.xz *= rot(u_distortion + float(i));
-        d1 = min(d1, length(p) - 0.2 * amp);
-        amp *= 0.5;
+        p.xz *= rot(u_distortion + float(i) * 0.5);
+        float d_i = (length(p) - 0.3 * scale) / scale;
+        d = min(d, d_i);
+        scale *= 0.8;
     }
     
-    // Smooth blending
-    float d2 = length(q + vec3(sin(u_time), cos(u_time), 0.0)) - 0.5;
-    float k = 0.5;
-    float d = mix(d2, d1, clamp(0.5 + 0.5 * (d2 - d1) / k, 0.0, 1.0)) - k * 0.5;
+    // Global warping
+    d += sin(q.x * u_distortion + u_time) * 0.05;
     
     return d;
 }
-
-// ==============================================================================
-// RAYMARCHING ENGINE
-// ==============================================================================
 
 float raymarch(vec3 ro, vec3 rd) {
     float dO = 0.0;
@@ -96,74 +80,43 @@ vec3 getNormal(vec3 p) {
     return normalize(n);
 }
 
-// ==============================================================================
-// FRAGMENT SHADER
-// ==============================================================================
-
 void fragment() {
-    // Resolution Independence via UV Correction
-    vec2 uv = (UV * 2.0 - 1.0);
     vec2 resolution = 1.0 / SCREEN_PIXEL_SIZE;
-    uv.x *= resolution.x / resolution.y;
+    vec2 uv = (FRAGCOORD.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
     
-    // Impulse: Chromatic Aberration Offset
-    float aber = u_impulse * 0.05;
+    // Camera
+    vec3 ro = vec3(0, 0, -5);
+    vec3 rd = normalize(vec3(uv, 1.5));
     
-    // Camera Setup (Phase 6 Super Polish: Breathing Camera)
-    vec3 ro = vec3(
-        sin(u_time * 0.1) * 0.5, 
-        cos(u_time * 0.13) * 0.5, 
-        -3.0 + u_distortion + sin(u_time * 0.05) * 0.2
-    );
-    
-    vec3 target = vec3(0.0, 0.0, 0.0);
-    vec3 fwd = normalize(target - ro);
-    vec3 right = normalize(cross(vec3(0, 1, 0), fwd));
-    vec3 up = cross(fwd, right);
-    
-    // Ray Directions for RGB channels (Simple chromatic aberration)
-    vec3 rdG = normalize(fwd + uv.x * right + uv.y * up);
-    vec3 rdR = normalize(fwd + (uv.x + aber) * right + uv.y * up);
-    vec3 rdB = normalize(fwd + (uv.x - aber) * right + uv.y * up);
-    
-    // Raymarch Main (Green/Center)
-    float d = raymarch(ro, rdG);
+    // Adaptive Step Early Exit
+    float d = raymarch(ro, rd);
     
     vec3 col = vec3(0.0);
     
     if(d < MAX_DIST) {
-        vec3 p = ro + rdG * d;
+        vec3 p = ro + rd * d;
         vec3 n = getNormal(p);
+        vec3 light = normalize(vec3(1, 2, -3));
         
-        // Simple Lighting
-        vec3 lightPos = vec3(2.0, 2.0, -2.0);
-        vec3 l = normalize(lightPos - p);
-        float dif = clamp(dot(n, l), 0.0, 1.0);
+        float diff = clamp(dot(n, light), 0.0, 1.0);
+        float amb = 0.1;
+        float spec = pow(clamp(dot(reflect(-light, n), -rd), 0.0, 1.0), 32.0);
         
-        // Rim Lighting (Phase 5 Polish)
-        float rim = 1.0 - max(dot(n, -rdG), 0.0);
-        rim = smoothstep(0.6, 1.0, rim);
+        vec3 base = u_color_seed + 0.3 * cos(u_phase + vec3(0, 2, 4));
+        col = base * diff + amb + spec * 0.5;
         
-        vec3 baseColor = u_color_seed + 0.2 * cos(vec3(0,2,4) + u_phase);
-        col = baseColor * dif;
-        col += vec3(0.1); 
-        col += baseColor * rim * 0.5; // Add Rim Term
-        
-        // Cheap Aberration coloring overlay if impulse is high
-        if (u_impulse > 0.01) {
-            col.r += 0.5 * u_impulse; 
-            col.b += 0.5 * u_impulse;
-        }
+        // Fog
+        col = mix(col, vec3(0), 1.0 - exp(-0.02 * d * d));
     }
     
-    // Post-Processing (Phase 5 Polish)
-    // 1. Vignette
-    float len = length(uv);
-    col *= smoothstep(1.5, 0.5, len);
+    // Final Polish
+    col *= 1.2; // Exposure
+    col = pow(col, vec3(0.4545)); // Gamma correction
     
-    // 2. Film Grain
-    float grain = noise(vec3(uv * 10.0, u_time * 10.0));
-    col += (grain - 0.5) * 0.05;
+    // Film Grain
+    float grain = noise(vec3(uv * 10.0, u_time));
+    col += (grain - 0.5) * 0.04;
     
     COLOR = vec4(col, 1.0);
 }
+
