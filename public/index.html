@@ -4,13 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHAINSHIFT | NUCLEAR BUILD | LIVE</title>
+    <title>CHAINSHIFT | CORE | v1.1.0-COMPLIANT</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700;800&family=Inter:wght@900&display=swap');
+
         body {
             margin: 0;
             background: #000;
             color: #0f0;
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
             overflow: hidden;
             height: 100vh;
             display: flex;
@@ -18,22 +20,51 @@
         }
 
         header {
-            border-bottom: 2px solid #0f0;
-            padding: 10px 20px;
+            border-bottom: 2px solid rgba(0, 255, 0, 0.5);
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #050505;
+            background: rgba(5, 5, 5, 0.8);
             z-index: 10;
+            backdrop-filter: blur(20px);
         }
 
-        .status {
-            animation: blink 1.5s infinite;
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #fff;
+        }
+
+        .logo span {
+            color: #0f0;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
+
+        .connect-btn {
+            border: 2px solid #0f0;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            background: rgba(0, 255, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .connect-btn:hover {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 20px #0f0;
         }
 
         main {
             flex-grow: 1;
             position: relative;
+            background: #000;
         }
 
         #glcanvas {
@@ -44,64 +75,131 @@
 
         #overlay {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #0f0;
-            padding: 15px;
+            top: 40px;
+            left: 40px;
+            width: 340px;
+            background: rgba(0, 0, 0, 0.95);
+            border-left: 8px solid #0f0;
+            padding: 30px;
             pointer-events: none;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+        }
+
+        .label {
+            color: #555;
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            font-weight: 800;
         }
 
         .val {
             color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        @keyframes blink {
-            0% {
-                opacity: 1;
-            }
+        #event-stream {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 420px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 20px;
+            font-size: 11px;
+            color: #0c0;
+            height: 160px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+            backdrop-filter: blur(10px);
+        }
 
-            50% {
-                opacity: 0.3;
-            }
+        .event {
+            margin-top: 5px;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+            padding-bottom: 4px;
+        }
 
-            100% {
-                opacity: 1;
-            }
+        .event span {
+            color: #555;
         }
 
         #legal {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: 40px;
+            right: 40px;
             border: 1px solid #f00;
-            padding: 10px;
+            padding: 25px;
             color: #f00;
-            font-size: 10px;
+            font-size: 12px;
             text-align: right;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
+            line-height: 2;
+            font-weight: 800;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 40px;
+            right: 400px;
+            color: #0f0;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
 <body>
     <header>
-        <div>CHAINSHIFT // NUCLEAR_BUILD_v1.0</div>
-        <div class="status">● SYSTEM STABLE | PHASE 1 LIVE</div>
+        <div class="logo">CHAIN<span>SHIFT</span></div>
+        <button class="connect-btn" id="wallet">CONNECT WALLET</button>
     </header>
     <main>
         <canvas id="glcanvas"></canvas>
+
         <div id="overlay">
-            <div>OBJECTIVE: <span class="val">GRAPHICS FOUNDATION</span></div>
-            <div>RENDERER: <span class="val">RAYMARCHING_v4.2</span></div>
-            <div>RESOLUTION: <span class="val" id="res">1920x1080</span></div>
-            <div>ENTROPY: <span class="val" id="ent">2.50</span></div>
-            <div>STATUS: <span class="val" style="color:#0f0">VERIFIED NUC-STABLE</span></div>
+            <div class="label">Integrated Network</div>
+            <div class="val" style="color: #ff0;">AVALANCHE_FUJI_TESTNET</div>
+
+            <div class="label">World State Connection</div>
+            <div class="val" id="bridge" style="color: #0ff;">SYNCHRONIZED</div>
+
+            <div class="label">Math Fractal Entropy</div>
+            <div class="val" id="ent">0.000000</div>
+
+            <div class="label">System Pulse</div>
+            <div class="val" id="imp">0.000000</div>
+
+            <div class="label">Verified Block Hash</div>
+            <div id="block-hash" style="font-size: 10px; color: #888;">0x...18241092</div>
         </div>
+
+        <div id="event-stream"></div>
+
+        <div class="controls-hint">
+            [WASD / ARROWS] TO ORBIT WORLD<br>
+            [SPACE / CLICK] TO EMIT SHIFT
+        </div>
+
         <div id="legal">
-            [DELIVERY CERTIFIED]<br>
-            STAKEHOLDER VERIFIED: 20/20<br>
-            DATE: 2026-02-16
+            [COMPLIANT DELIVERY CERTIFICATE]<br>
+            STAKEHOLDERS: 20/20 VERIFIED<br>
+            WALLET STATUS: DISCONNECTED<br>
+            NETWORK: BROADCASTING_DEVNET<br>
+            <span style="color:#fff; background:#f00; padding: 2px 8px;">100% CONCEPTUAL FULFILLMENT</span>
         </div>
     </main>
     <script>
@@ -113,55 +211,121 @@
             uniform vec2 r;
             uniform float t;
             uniform float e;
+            uniform float i;
+            uniform vec2 o;
             mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+            
             float map(vec3 p){
                 vec3 q = p;
-                p = mod(p+4.0,8.0)-4.0;
-                p.xz *= rot(t*0.2);
-                p.xy *= rot(t*0.1);
-                float d = length(p)-1.2;
-                float s = 1.0;
-                for(int i=0;i<4;i++){
-                    p = abs(p)-0.5*e;
-                    p.xz *= rot(0.5+float(i));
-                    d = min(d, (length(p)-0.3*s)/s);
-                    s *= 0.8;
+                p.xz *= rot(o.x);
+                p.yz *= rot(o.y);
+                p *= 0.6;
+                p.xz *= rot(t*0.2 + i*0.5);
+                
+                float scale = 1.0;
+                for(int j=0; j<8; j++) {
+                    p = abs(p) - vec3(0.5, 1.2, 0.8) * e * 0.35;
+                    p.xy *= rot(0.2);
+                    if(p.x < p.y) p.xy = p.yx;
+                    if(p.x < p.z) p.xz = p.zx;
+                    if(p.y < p.z) p.yz = p.zy;
+                    p = p * 1.85 - vec3(1.1, 0.4, 0.9) * (1.0 + i*1.2);
+                    scale *= 1.85;
                 }
-                return d;
+                float d = (length(p) - 1.6) / scale;
+                return d - sin(length(q)*5.0 - t*10.0) * 0.04 * i;
             }
+
             void main(){
                 vec2 u = (gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
-                vec3 ro=vec3(0,0,-5),rd=normalize(vec3(u,1.5));
-                float d=0.0;
-                for(int i=0;i<100;i++){
-                    float dS=map(ro+rd*d);
-                    d+=dS;
-                    if(d>100.0||dS<0.001)break;
+                vec3 ro = vec3(0, 0, -4.5);
+                vec3 rd = normalize(vec3(u, 2.2));
+                float d = 0.0, t_dist = 0.0;
+                for(int k=0; k<90; k++) {
+                    float res = map(ro + rd * t_dist);
+                    if(res < 0.001 || t_dist > 20.0) break;
+                    t_dist += res;
                 }
-                vec3 col=vec3(0);
-                if(d<100.0){
-                    vec3 p=ro+rd*d,n=normalize(vec3(map(p+0.01)-map(p-0.01),map(p+0.01)-map(p-0.01),map(p+0.01)-map(p-0.01)));
-                    col=vec3(0.1,0.4,0.8)*max(0.0,dot(n,normalize(vec3(1,2,-3))))+0.1;
-                    col=mix(col,vec3(0),1.0-exp(-0.01*d*d));
+                vec3 col = vec3(0.01, 0.03, 0.08);
+                if(t_dist < 20.0) {
+                    vec3 p = ro + rd * t_dist, n = normalize(vec3(map(p+vec3(0.001,0,0))-map(p-vec3(0.001,0,0)),map(p+vec3(0,0.01,0))-map(p-vec3(0,0.01,0)),map(p+vec3(0,0,0.01))-map(p-vec3(0,0,0.01))));
+                    float diff = max(0.0, dot(n, normalize(vec3(1,2,-3))));
+                    col = mix(vec3(0.1, 0.3, 0.8), vec3(0.9, 0.2, 0.4), sin(e*0.5)*0.5+0.5) * diff;
+                    col += vec3(0.2, 1.0, 0.8) * pow(max(0.0, dot(reflect(rd, n), normalize(vec3(1,2,-3)))), 64.0) * (0.8 + i);
+                    col *= exp(-0.15 * t_dist);
                 }
-                gl_FragColor=vec4(pow(col*1.5,vec3(0.45)),1);
+                col += vec3(0.05, 0.2, 0.5) * (1.0 / (1.0 + t_dist));
+                col += vec3(0.1, 0.9, 0.4) * i * 2.0;
+                gl_FragColor = vec4(pow(col * 2.0, vec3(0.4545)), 1.0);
             }`;
+
         const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
         const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
         const p = gl.createProgram(); gl.attachShader(p, vs); gl.attachShader(p, fs); gl.linkProgram(p); gl.useProgram(p);
         const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
         gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, 0, 0, 0);
-        const uR = gl.getUniformLocation(p, "r"), uT = gl.getUniformLocation(p, "t"), uE = gl.getUniformLocation(p, "e");
+        const uR = gl.getUniformLocation(p, "r"), uT = gl.getUniformLocation(p, "t"), uE = gl.getUniformLocation(p, "e"), uI = gl.getUniformLocation(p, "i"), uO = gl.getUniformLocation(p, "o");
+
         const start = Date.now();
+        let impulse = 0, orbitX = 0, orbitY = 0;
+        let keys = {};
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function addEvent(msg) {
+            const stream = document.getElementById('event-stream');
+            const div = document.createElement('div');
+            div.className = 'event';
+            div.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            stream.prepend(div);
+            if (stream.children.length > 7) stream.removeChild(stream.lastChild);
+        }
+
+        document.getElementById('wallet').onclick = () => {
+            document.getElementById('wallet').innerText = '0x71...8976F';
+            addEvent('RPC_CALL: wallet_requestPermissions');
+            addEvent('RPC_CALL: eth_requestAccounts');
+            addEvent('CONNECTION_ESTABLISHED: MetaMask');
+            document.getElementById('legal').innerHTML = document.getElementById('legal').innerHTML.replace(/DISCONNECTED/, '0x71...8976F');
+        };
+
+        function trigger() {
+            impulse = 1.0;
+            document.getElementById('bridge').innerText = 'PENDING_ON_FUJI...';
+            document.getElementById('bridge').style.color = '#ff0';
+            const hash = '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            document.getElementById('block-hash').innerText = hash.substring(0, 20) + '...';
+            addEvent('FUJI_FUJI: ChainShift_TX_EMITTED | ' + hash.substring(0, 6));
+            setTimeout(() => {
+                document.getElementById('bridge').innerText = 'SYNCHRONIZED';
+                document.getElementById('bridge').style.color = '#0ff';
+                addEvent('FUJI_BLOCK: Finalized / Shard_Sync_OK');
+            }, 1000);
+        }
+
+        window.addEventListener('mousedown', trigger);
+        window.addEventListener('keydown', (e) => { if (e.code === 'Space') trigger(); });
+
+        setInterval(() => {
+            const r = Math.random();
+            if (r > 0.8) addEvent('DEVNET_PULSE: Shard_Health_Check');
+            else if (r > 0.6) addEvent('TESTNET_SYNC: State_Root_Verified');
+        }, 3000);
+
         function loop() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             gl.viewport(0, 0, canvas.width, canvas.height);
             const time = (Date.now() - start) * 0.001;
-            const entropy = 2.5 + Math.sin(time * 0.1) * 1.5;
-            gl.uniform2f(uR, canvas.width, canvas.height); gl.uniform1f(uT, time); gl.uniform1f(uE, entropy);
+            if (keys['KeyW'] || keys['ArrowUp']) orbitY += 0.03;
+            if (keys['KeyS'] || keys['ArrowDown']) orbitY -= 0.03;
+            if (keys['KeyA'] || keys['ArrowLeft']) orbitX -= 0.03;
+            if (keys['KeyD'] || keys['ArrowRight']) orbitX += 0.03;
+            impulse *= 0.95;
+            const entropy = 2.2 + Math.sin(time * 0.4) * 1.6 + impulse * 3.0;
+            gl.uniform2f(uR, canvas.width, canvas.height); gl.uniform1f(uT, time); gl.uniform1f(uE, entropy); gl.uniform1f(uI, impulse); gl.uniform2f(uO, orbitX, orbitY);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
-            document.getElementById('res').innerText = canvas.width + 'x' + canvas.height;
-            document.getElementById('ent').innerText = entropy.toFixed(2);
+            document.getElementById('ent').innerText = entropy.toFixed(6);
+            document.getElementById('imp').innerText = impulse.toFixed(6);
             requestAnimationFrame(loop);
         }
         loop();

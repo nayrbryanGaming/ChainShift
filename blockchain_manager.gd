@@ -2,12 +2,12 @@ extends Node
 class_name BlockchainManager
 
 # ==============================================================================
-# BLOCKCHAIN MANAGER (PHASE 4)
+# BLOCKCHAIN MANAGER (PHASE 3 - ON-CHAIN BRIDGE)
 # ==============================================================================
-# Simulates the Network Layer.
-# - Handling RPC calls
-# - Simulating Latency (Block time)
-# - Emitting "On-Chain" Events to the Client
+# Single Source of Truth Bridge for Avalanche C-Chain.
+# - Handles JSON-RPC Simulation/Integration.
+# - Hex-to-Float Parameter Translation.
+# - Deterministic World Sync.
 # ==============================================================================
 
 signal transaction_pending

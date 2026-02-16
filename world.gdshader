@@ -1,7 +1,7 @@
 shader_type canvas_item;
 
 // ==============================================================================
-// CHAINSHIFT - NUCLEAR BUILD :: PHASE 1 FOUNDATION
+// CHAINSHIFT - NUCLEAR BUILD :: PHASE 2 INTERACTION (SHIFT)
 // ==============================================================================
 // Pure procedural world rendered via Raymarching.
 // No external assets. 4K compliant. 60 FPS target.
@@ -12,6 +12,7 @@ uniform float u_phase;        // Evolution angle
 uniform float u_distortion;   // Spatial warping
 uniform vec3  u_color_seed;   // Base color palette
 uniform float u_time;         // Engine time
+uniform float u_impulse;      // SHIFT trigger (Phase 2)
 
 // CONSTANTS
 const int MAX_STEPS = 128;
@@ -29,7 +30,7 @@ float noise(vec3 p) {
     return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453);
 }
 
-// Phase 1 SDF: Mathematical Core
+// Phase 2 SDF: Mathematical Core + SHIFT Effect
 float map(vec3 p) {
     vec3 q = p;
     
@@ -40,13 +41,17 @@ float map(vec3 p) {
     p.xz *= rot(u_phase + u_time * 0.1);
     p.xy *= rot(u_phase * 0.5);
     
+    // SHIFT Effect (Ripple)
+    float ripple = sin(length(q) * 2.0 - u_time * 4.0) * 0.1 * u_impulse;
+    p += ripple;
+    
     // Fractal Folding (Symmetry and Complexity)
     float d = length(p) - 1.2;
     float scale = 1.0;
     
     for(int i = 0; i < 4; i++) {
         p = abs(p) - 0.5 * u_entropy;
-        p.xz *= rot(u_distortion + float(i) * 0.5);
+        p.xz *= rot(u_distortion + float(i) * 0.5 + u_impulse * 0.2);
         float d_i = (length(p) - 0.3 * scale) / scale;
         d = min(d, d_i);
         scale *= 0.8;
@@ -54,6 +59,7 @@ float map(vec3 p) {
     
     // Global warping
     d += sin(q.x * u_distortion + u_time) * 0.05;
+    d -= ripple * 0.5; // Feedback ripple into distance
     
     return d;
 }
