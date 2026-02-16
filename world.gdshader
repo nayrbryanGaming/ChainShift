@@ -1,7 +1,7 @@
 shader_type canvas_item;
 
 // ==============================================================================
-// CHAINSHIFT - NUCLEAR BUILD :: PHASE 2 INTERACTION (SHIFT)
+// CHAINSHIFT - CORE PRODUCTION :: PHASE 2 INTERACTION (SHIFT)
 // ==============================================================================
 // Pure procedural world rendered via Raymarching.
 // No external assets. 4K compliant. 60 FPS target.

@@ -30,7 +30,7 @@ func _input(event: InputEvent) -> void:
         _trigger_shift()
 
 func _ready() -> void:
-    print("CHAINSHIFT :: NUCLEAR BUILD :: PHASE 3 :: BRIDGE ONLINE")
+    print("CHAINSHIFT :: CORE PRODUCTION :: PHASE 3 :: BRIDGE ONLINE")
     _certify_build_visuals()
     
     if blockchain:
@@ -73,7 +73,7 @@ func _update_shader() -> void:
 
 func _certify_build_visuals() -> void:
     var label = Label.new()
-    label.text = "CHAINSHIFT NUCLEAR BUILD\nPHASE 1: GRAPHICS STABLE\nREAL-TIME PROCEDURAL"
+    label.text = "CHAINSHIFT CORE PRODUCTION\nPHASE 1: GRAPHICS STABLE\nREAL-TIME PROCEDURAL"
     label.add_theme_font_size_override("font_size", 32)
     label.add_theme_color_override("font_color", Color(0, 1, 0, 1))
     label.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 20)
