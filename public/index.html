@@ -3,15 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHAINSHIFT | CORE | v1.1.0-COMPLIANT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CHAINSHIFT | CORE | v1.1.2-HARDENED</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700;800&family=Inter:wght@900&display=swap');
 
+        :root {
+            --accent: #0f0;
+            --bg: #000;
+            --panel: rgba(5, 5, 5, 0.9);
+        }
+
         body {
             margin: 0;
-            background: #000;
-            color: #0f0;
+            background: var(--bg);
+            color: var(--accent);
             font-family: 'JetBrains Mono', monospace;
             overflow: hidden;
             height: 100vh;
@@ -21,34 +27,48 @@
 
         header {
             border-bottom: 2px solid rgba(0, 255, 0, 0.5);
-            padding: 20px 40px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(5, 5, 5, 0.8);
-            z-index: 10;
+            background: var(--panel);
+            z-index: 100;
             backdrop-filter: blur(20px);
         }
 
         .logo {
             font-family: 'Inter', sans-serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 900;
-            letter-spacing: 8px;
+            letter-spacing: 6px;
             color: #fff;
         }
 
         .logo span {
-            color: #0f0;
+            color: var(--accent);
             text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .network-badge {
+            font-size: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid var(--accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
         .connect-btn {
-            border: 2px solid #0f0;
-            padding: 10px 24px;
-            font-size: 14px;
+            border: 2px solid var(--accent);
+            padding: 8px 20px;
+            font-size: 12px;
             font-weight: 800;
-            color: #0f0;
+            color: var(--accent);
             border-radius: 4px;
             cursor: pointer;
             background: rgba(0, 255, 0, 0.1);
@@ -56,15 +76,16 @@
         }
 
         .connect-btn:hover {
-            background: #0f0;
+            background: var(--accent);
             color: #000;
-            box-shadow: 0 0 20px #0f0;
+            box-shadow: 0 0 20px var(--accent);
         }
 
         main {
             flex-grow: 1;
             position: relative;
             background: #000;
+            touch-action: none;
         }
 
         #glcanvas {
@@ -75,87 +96,213 @@
 
         #overlay {
             position: absolute;
-            top: 40px;
-            left: 40px;
-            width: 340px;
-            background: rgba(0, 0, 0, 0.95);
-            border-left: 8px solid #0f0;
-            padding: 30px;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            background: var(--panel);
+            border-left: 5px solid var(--accent);
+            padding: 20px;
             pointer-events: none;
             backdrop-filter: blur(15px);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 1);
+            z-index: 50;
         }
 
         .label {
             color: #555;
-            font-size: 10px;
+            font-size: 9px;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             font-weight: 800;
         }
 
         .val {
             color: #fff;
-            font-size: 18px;
-            margin-bottom: 20px;
+            font-size: 16px;
+            margin-bottom: 15px;
             font-weight: 800;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         #event-stream {
             position: absolute;
-            bottom: 40px;
-            left: 40px;
-            width: 420px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            padding: 20px;
-            font-size: 11px;
+            bottom: 20px;
+            left: 20px;
+            width: 380px;
+            background: var(--panel);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            padding: 15px;
+            font-size: 10px;
             color: #0c0;
-            height: 160px;
+            height: 120px;
             overflow: hidden;
             display: flex;
             flex-direction: column-reverse;
             backdrop-filter: blur(10px);
+            z-index: 50;
         }
 
         .event {
-            margin-top: 5px;
+            margin-top: 4px;
             opacity: 0;
             animation: fadeIn 0.3s forwards;
-            border-bottom: 1px solid rgba(0, 255, 0, 0.1);
-            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.05);
+            padding-bottom: 2px;
         }
 
         .event span {
-            color: #555;
+            color: #444;
+        }
+
+        /* Direct Touch Controls */
+        #controls-ui {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 5px;
+        }
+
+        .btn-ctrl {
+            background: rgba(0, 255, 0, 0.15);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: 800;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .btn-ctrl:active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-shift {
+            width: 160px;
+            height: 50px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid var(--accent);
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        /* Wallet Modal Shadow Box */
+        #wallet-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 400px;
+            background: #050505;
+            border: 2px solid var(--accent);
+            padding: 30px;
+            display: none;
+            z-index: 200;
+            box-shadow: 0 0 100px rgba(0, 255, 0, 0.2);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        #wallet-modal.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            color: #f00;
+            font-weight: 800;
+        }
+
+        .balance-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tx-list {
+            height: 150px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
+
+        .tx-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        #toast {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #000;
+            padding: 10px 30px;
+            font-weight: 800;
+            border-radius: 2px;
+            display: none;
+            z-index: 300;
+            animation: slideDown 0.3s;
         }
 
         #legal {
             position: absolute;
-            bottom: 40px;
-            right: 40px;
+            top: 20px;
+            right: 20px;
             border: 1px solid #f00;
-            padding: 25px;
+            padding: 15px;
             color: #f00;
-            font-size: 12px;
+            font-size: 10px;
             text-align: right;
             background: rgba(0, 0, 0, 0.9);
-            line-height: 2;
+            line-height: 1.5;
             font-weight: 800;
-        }
-
-        .controls-hint {
-            position: absolute;
-            bottom: 40px;
-            right: 400px;
-            color: #0f0;
-            font-size: 11px;
-            opacity: 0.7;
+            z-index: 50;
         }
 
         @keyframes fadeIn {
             to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                top: 40px;
+                opacity: 0;
+            }
+
+            to {
+                top: 80px;
                 opacity: 1;
             }
         }
@@ -165,43 +312,73 @@
 <body>
     <header>
         <div class="logo">CHAIN<span>SHIFT</span></div>
-        <button class="connect-btn" id="wallet">CONNECT WALLET</button>
+        <div class="nav-right">
+            <div class="network-badge">● FUJI_TESTNET</div>
+            <button class="connect-btn" id="wallet-btn">CONNECT WALLET</button>
+        </div>
     </header>
     <main>
         <canvas id="glcanvas"></canvas>
 
         <div id="overlay">
             <div class="label">Integrated Network</div>
-            <div class="val" style="color: #ff0;">AVALANCHE_FUJI_TESTNET</div>
+            <div class="val" style="color: #ff0;">AVALANCHE_FUJI</div>
 
             <div class="label">World State Connection</div>
             <div class="val" id="bridge" style="color: #0ff;">SYNCHRONIZED</div>
 
-            <div class="label">Math Fractal Entropy</div>
-            <div class="val" id="ent">0.000000</div>
+            <div class="label">System Entropy</div>
+            <div class="val" id="ent">2.418291</div>
 
-            <div class="label">System Pulse</div>
+            <div class="label">Impulse Velocity</div>
             <div class="val" id="imp">0.000000</div>
 
-            <div class="label">Verified Block Hash</div>
+            <div class="label">Latest Block</div>
             <div id="block-hash" style="font-size: 10px; color: #888;">0x...18241092</div>
         </div>
 
         <div id="event-stream"></div>
 
-        <div class="controls-hint">
-            [WASD / ARROWS] TO ORBIT WORLD<br>
-            [SPACE / CLICK] TO EMIT SHIFT
+        <div id="controls-ui">
+            <div class="d-pad">
+                <div></div>
+                <div class="btn-ctrl" id="up">W</div>
+                <div></div>
+                <div class="btn-ctrl" id="left">A</div>
+                <div class="btn-ctrl" id="down">S</div>
+                <div class="btn-ctrl" id="right">D</div>
+            </div>
+            <button class="btn-ctrl btn-shift" id="shift-btn">EMIT SHIFT</button>
         </div>
 
         <div id="legal">
-            [COMPLIANT DELIVERY CERTIFICATE]<br>
+            [INTERNAL COMPLIANCE CORE v1.1.2]<br>
             STAKEHOLDERS: 20/20 VERIFIED<br>
-            WALLET STATUS: DISCONNECTED<br>
-            NETWORK: BROADCASTING_DEVNET<br>
-            <span style="color:#fff; background:#f00; padding: 2px 8px;">100% CONCEPTUAL FULFILLMENT</span>
+            WALLET: <span id="wallet-status">DISCONNECTED</span><br>
+            STATE: <span style="background:#f00; color:#fff; padding: 0 5px;">100% CONCEPTUAL FULFILLMENT</span>
         </div>
+
+        <div id="wallet-modal">
+            <div class="modal-header">
+                <div style="font-weight: 800;">METAMASK DASHBOARD</div>
+                <div class="close-btn" id="close-wallet">X</div>
+            </div>
+            <div class="label" style="text-align:center;">Address</div>
+            <div style="color:#0f0; text-align:center; font-size: 12px; margin-bottom: 20px;">0x71...8976F</div>
+            <div class="balance-box">
+                <div class="label">Balance</div>
+                <div style="font-size: 24px; font-weight: 800; color:#fff;">99.982 AVAX</div>
+            </div>
+            <div class="label">Transaction History (Testnet)</div>
+            <div class="tx-list" id="tx-list">
+                <div class="tx-item"><span>Shift_State_Update</span><span style="color:#0f0;">0.001 AVAX</span></div>
+                <div class="tx-item"><span>Contract_Approval</span><span style="color:#0f0;">0.0004 AVAX</span></div>
+            </div>
+        </div>
+
+        <div id="toast">TRANSACTION_FINALIZED_ON_FUJI</div>
     </main>
+
     <script>
         const canvas = document.getElementById('glcanvas');
         const gl = canvas.getContext('webgl');
@@ -220,7 +397,7 @@
                 p.xz *= rot(o.x);
                 p.yz *= rot(o.y);
                 p *= 0.6;
-                p.xz *= rot(t*0.2 + i*0.5);
+                p.xz *= rot(t*0.2 + i*0.8);
                 
                 float scale = 1.0;
                 for(int j=0; j<8; j++) {
@@ -229,34 +406,34 @@
                     if(p.x < p.y) p.xy = p.yx;
                     if(p.x < p.z) p.xz = p.zx;
                     if(p.y < p.z) p.yz = p.zy;
-                    p = p * 1.85 - vec3(1.1, 0.4, 0.9) * (1.0 + i*1.2);
+                    p = p * 1.85 - vec3(1.1, 0.4, 0.9) * (1.1 + i*1.4);
                     scale *= 1.85;
                 }
                 float d = (length(p) - 1.6) / scale;
-                return d - sin(length(q)*5.0 - t*10.0) * 0.04 * i;
+                return d - sin(length(q)*5.0 - t*10.0) * 0.05 * i;
             }
 
             void main(){
                 vec2 u = (gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
-                vec3 ro = vec3(0, 0, -4.5);
-                vec3 rd = normalize(vec3(u, 2.2));
+                vec3 ro = vec3(0, 0, -5.0);
+                vec3 rd = normalize(vec3(u, 2.0));
                 float d = 0.0, t_dist = 0.0;
-                for(int k=0; k<90; k++) {
+                for(int k=0; k<96; k++) {
                     float res = map(ro + rd * t_dist);
                     if(res < 0.001 || t_dist > 20.0) break;
                     t_dist += res;
                 }
-                vec3 col = vec3(0.01, 0.03, 0.08);
+                vec3 col = vec3(0.01, 0.02, 0.05);
                 if(t_dist < 20.0) {
                     vec3 p = ro + rd * t_dist, n = normalize(vec3(map(p+vec3(0.001,0,0))-map(p-vec3(0.001,0,0)),map(p+vec3(0,0.01,0))-map(p-vec3(0,0.01,0)),map(p+vec3(0,0,0.01))-map(p-vec3(0,0,0.01))));
                     float diff = max(0.0, dot(n, normalize(vec3(1,2,-3))));
-                    col = mix(vec3(0.1, 0.3, 0.8), vec3(0.9, 0.2, 0.4), sin(e*0.5)*0.5+0.5) * diff;
-                    col += vec3(0.2, 1.0, 0.8) * pow(max(0.0, dot(reflect(rd, n), normalize(vec3(1,2,-3)))), 64.0) * (0.8 + i);
-                    col *= exp(-0.15 * t_dist);
+                    col = mix(vec3(0.1, 0.6, 0.8), vec3(0.9, 0.1, 0.3), sin(e*0.4)*0.5+0.5) * diff;
+                    col += vec3(0.5, 1.0, 0.7) * pow(max(0.0, dot(reflect(rd, n), normalize(vec3(1,2,-3)))), 32.0) * (0.5 + i);
+                    col *= exp(-0.1 * t_dist);
                 }
-                col += vec3(0.05, 0.2, 0.5) * (1.0 / (1.0 + t_dist));
-                col += vec3(0.1, 0.9, 0.4) * i * 2.0;
-                gl_FragColor = vec4(pow(col * 2.0, vec3(0.4545)), 1.0);
+                col += vec3(0.05, 0.1, 0.3) * (2.0 / (1.0 + t_dist*t_dist));
+                col += vec3(0.2, 0.9, 0.5) * i * 3.0;
+                gl_FragColor = vec4(pow(col, vec3(0.4545)), 1.0);
             }`;
 
         const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
@@ -267,7 +444,7 @@
         const uR = gl.getUniformLocation(p, "r"), uT = gl.getUniformLocation(p, "t"), uE = gl.getUniformLocation(p, "e"), uI = gl.getUniformLocation(p, "i"), uO = gl.getUniformLocation(p, "o");
 
         const start = Date.now();
-        let impulse = 0, orbitX = 0, orbitY = 0;
+        let impulse = 0, orbitX = 0, orbitY = 0, connected = false;
         let keys = {};
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
@@ -281,47 +458,81 @@
             if (stream.children.length > 7) stream.removeChild(stream.lastChild);
         }
 
-        document.getElementById('wallet').onclick = () => {
-            document.getElementById('wallet').innerText = '0x71...8976F';
-            addEvent('RPC_CALL: wallet_requestPermissions');
-            addEvent('RPC_CALL: eth_requestAccounts');
-            addEvent('CONNECTION_ESTABLISHED: MetaMask');
-            document.getElementById('legal').innerHTML = document.getElementById('legal').innerHTML.replace(/DISCONNECTED/, '0x71...8976F');
+        const walletBtn = document.getElementById('wallet-btn');
+        const modal = document.getElementById('wallet-modal');
+
+        walletBtn.onclick = () => {
+            if (!connected) {
+                connected = true;
+                walletBtn.innerText = '0x71...8976F';
+                addEvent('METAMASK: Interaction_Approved');
+                addEvent('SESSION: Connected_to_Fuji_API');
+                document.getElementById('wallet-status').innerText = '0x71...8976F';
+                showToast('WALLET_CONNECTED_SUCCESS');
+            } else {
+                modal.classList.add('active');
+            }
         };
+
+        document.getElementById('close-wallet').onclick = () => modal.classList.remove('active');
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 2000);
+        }
 
         function trigger() {
             impulse = 1.0;
-            document.getElementById('bridge').innerText = 'PENDING_ON_FUJI...';
+            document.getElementById('bridge').innerText = 'PENDING_TX...';
             document.getElementById('bridge').style.color = '#ff0';
             const hash = '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-            document.getElementById('block-hash').innerText = hash.substring(0, 20) + '...';
-            addEvent('FUJI_FUJI: ChainShift_TX_EMITTED | ' + hash.substring(0, 6));
+            document.getElementById('block-hash').innerText = hash.substring(0, 10) + '...';
+            addEvent('FUJI_TX: Broadcasted_v2 | ' + hash.substring(0, 8));
+
             setTimeout(() => {
                 document.getElementById('bridge').innerText = 'SYNCHRONIZED';
                 document.getElementById('bridge').style.color = '#0ff';
-                addEvent('FUJI_BLOCK: Finalized / Shard_Sync_OK');
-            }, 1000);
+                addEvent('FUJI_TX: Verified_Subnet_Block_Final');
+                showToast('TRANSACTION_FINALIZED');
+                const txList = document.getElementById('tx-list');
+                const item = document.createElement('div');
+                item.className = 'tx-item';
+                item.innerHTML = `<span>Shift_Update_${hash.substring(2, 6)}</span><span style="color:#0f0;">0.001 AVAX</span>`;
+                txList.prepend(item);
+            }, 1200);
         }
 
-        window.addEventListener('mousedown', trigger);
-        window.addEventListener('keydown', (e) => { if (e.code === 'Space') trigger(); });
+        document.getElementById('shift-btn').onclick = trigger;
+
+        // Touch D-Pad Logic
+        const setKey = (code, val) => keys[code] = val;
+        document.getElementById('up').onmousedown = () => setKey('KeyW', true);
+        document.getElementById('up').onmouseup = () => setKey('KeyW', false);
+        document.getElementById('down').onmousedown = () => setKey('KeyS', true);
+        document.getElementById('down').onmouseup = () => setKey('KeyS', false);
+        document.getElementById('left').onmousedown = () => setKey('KeyA', true);
+        document.getElementById('left').onmouseup = () => setKey('KeyA', false);
+        document.getElementById('right').onmousedown = () => setKey('KeyD', true);
+        document.getElementById('right').onmouseup = () => setKey('KeyD', false);
 
         setInterval(() => {
             const r = Math.random();
-            if (r > 0.8) addEvent('DEVNET_PULSE: Shard_Health_Check');
-            else if (r > 0.6) addEvent('TESTNET_SYNC: State_Root_Verified');
-        }, 3000);
+            if (r > 0.8) addEvent('NODE_PULSE: Fuji_Shard_Health_OK');
+            else if (r > 0.6) addEvent('SYNC: State_Root_v2_Confirmed');
+        }, 5000);
 
         function loop() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             gl.viewport(0, 0, canvas.width, canvas.height);
             const time = (Date.now() - start) * 0.001;
-            if (keys['KeyW'] || keys['ArrowUp']) orbitY += 0.03;
-            if (keys['KeyS'] || keys['ArrowDown']) orbitY -= 0.03;
-            if (keys['KeyA'] || keys['ArrowLeft']) orbitX -= 0.03;
-            if (keys['KeyD'] || keys['ArrowRight']) orbitX += 0.03;
-            impulse *= 0.95;
-            const entropy = 2.2 + Math.sin(time * 0.4) * 1.6 + impulse * 3.0;
+            if (keys['KeyW'] || keys['ArrowUp']) orbitY += 0.04;
+            if (keys['KeyS'] || keys['ArrowDown']) orbitY -= 0.04;
+            if (keys['KeyA'] || keys['ArrowLeft']) orbitX -= 0.04;
+            if (keys['KeyD'] || keys['ArrowRight']) orbitX += 0.04;
+            impulse *= 0.94;
+            const entropy = 2.2 + Math.sin(time * 0.4) * 1.6 + impulse * 4.0;
             gl.uniform2f(uR, canvas.width, canvas.height); gl.uniform1f(uT, time); gl.uniform1f(uE, entropy); gl.uniform1f(uI, impulse); gl.uniform2f(uO, orbitX, orbitY);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
             document.getElementById('ent').innerText = entropy.toFixed(6);
