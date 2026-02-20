@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CHAINSHIFT | CORE | v1.1.5-PRODUCTION</title>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <title>CHAINSHIFT | CORE | v1.3.1-STABLE</title>
+    <!-- ROBUST ETHERS LOADING -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"
+        integrity="sha512-FDcVY+g7vc55I8ZYbCJu08lyrpIuerftYv5L6LqF25hD+rVWlD+D8UqCexLCT0nuywT6sM7vCDhQWq7W9uP6LA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700;800&family=Inter:wght@900&display=swap');
 
@@ -13,7 +16,7 @@
             --accent: #0fec85;
             --bg: #000;
             --panel: rgba(5, 7, 10, 0.92);
-            --border: rgba(15, 236, 133, 0.3);
+            --border: rgba(15, 236, 133, 0.3)
         }
 
         body {
@@ -24,7 +27,7 @@
             overflow: hidden;
             height: 100vh;
             display: flex;
-            flex-direction: column;
+            flex-direction: column
         }
 
         header {
@@ -35,7 +38,7 @@
             align-items: center;
             background: var(--panel);
             z-index: 1000;
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(30px)
         }
 
         .logo {
@@ -43,18 +46,18 @@
             font-size: 20px;
             font-weight: 900;
             letter-spacing: 5px;
-            color: #fff;
+            color: #fff
         }
 
         .logo span {
             color: var(--accent);
-            text-shadow: 0 0 15px rgba(15, 236, 133, 0.6);
+            text-shadow: 0 0 15px rgba(15, 236, 133, 0.6)
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 15px
         }
 
         .status-dot {
@@ -63,7 +66,7 @@
             border-radius: 50%;
             background: var(--accent);
             box-shadow: 0 0 10px var(--accent);
-            animation: pulse 2s infinite;
+            animation: pulse 2s infinite
         }
 
         .connect-btn {
@@ -75,13 +78,13 @@
             border-radius: 2px;
             cursor: pointer;
             background: rgba(15, 236, 133, 0.05);
-            transition: 0.2s;
+            transition: 0.2s
         }
 
         .connect-btn:hover {
             background: var(--accent);
             color: #000;
-            box-shadow: 0 0 15px var(--accent);
+            box-shadow: 0 0 15px var(--accent)
         }
 
         main {
@@ -89,15 +92,18 @@
             position: relative;
             background: #000;
             touch-action: none;
+            overflow: hidden
         }
 
         #glcanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            display: block;
+            display: block
         }
 
-        /* Dashboard Panels */
         .panel {
             position: absolute;
             background: var(--panel);
@@ -106,14 +112,14 @@
             pointer-events: none;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-            z-index: 100;
+            z-index: 100
         }
 
         #left-dash {
             top: 20px;
             left: 20px;
             width: 260px;
-            border-left: 4px solid var(--accent);
+            border-left: 4px solid var(--accent)
         }
 
         #right-dash {
@@ -121,7 +127,7 @@
             right: 20px;
             width: 260px;
             border-right: 4px solid var(--accent);
-            text-align: right;
+            text-align: right
         }
 
         .label {
@@ -130,14 +136,14 @@
             text-transform: uppercase;
             margin-bottom: 2px;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 1px
         }
 
         .val {
             color: #fff;
             font-size: 14px;
             margin-bottom: 12px;
-            font-weight: 800;
+            font-weight: 800
         }
 
         #event-monitor {
@@ -155,10 +161,9 @@
             display: flex;
             flex-direction: column-reverse;
             backdrop-filter: blur(5px);
-            z-index: 100;
+            z-index: 100
         }
 
-        /* Control Interface */
         #ctrl-grid {
             position: absolute;
             bottom: 20px;
@@ -167,14 +172,14 @@
             gap: 15px;
             align-items: flex-end;
             z-index: 1000;
-            pointer-events: auto;
+            pointer-events: auto
         }
 
         .d-pad {
             display: grid;
             grid-template-columns: repeat(3, 40px);
             grid-template-rows: repeat(3, 40px);
-            gap: 4px;
+            gap: 4px
         }
 
         .btn-sq {
@@ -188,18 +193,18 @@
             font-weight: 800;
             cursor: pointer;
             transition: 0.1s;
-            font-size: 12px;
+            font-size: 12px
         }
 
         .btn-sq:active {
             background: var(--accent);
-            color: #000;
+            color: #000
         }
 
         .action-hub {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 10px
         }
 
         .btn-main {
@@ -212,14 +217,14 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
+            font-family: 'JetBrains Mono', monospace
         }
 
         .btn-main:hover {
             background: var(--accent);
-            color: #000;
+            color: #000
         }
 
-        /* Wallet & Compliance Modal */
         #modal-overlay {
             position: fixed;
             inset: 0;
@@ -227,7 +232,7 @@
             display: none;
             place-items: center;
             z-index: 2000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px)
         }
 
         #modal {
@@ -235,11 +240,11 @@
             border: 2px solid var(--accent);
             width: 450px;
             padding: 40px;
-            position: relative;
+            position: relative
         }
 
         .modal-active {
-            display: grid !important;
+            display: grid !important
         }
 
         .compliance-tag {
@@ -251,7 +256,7 @@
             padding: 2px 10px;
             font-size: 10px;
             font-weight: 800;
-            transform: skewX(-15deg);
+            transform: skewX(-15deg)
         }
 
         #toast {
@@ -266,25 +271,23 @@
             font-size: 11px;
             opacity: 0;
             transition: 0.3s;
-            z-index: 3000;
+            z-index: 3000
         }
 
         @keyframes pulse {
-            0% {
-                opacity: 0.4;
+
+            0%,
+            100% {
+                opacity: 0.4
             }
 
             50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.4;
+                opacity: 1
             }
         }
 
         .fuji-text {
-            color: #ff3e3e;
+            color: #ff3e3e
         }
     </style>
 </head>
@@ -294,43 +297,33 @@
         <div class="logo">CHAIN<span>SHIFT</span></div>
         <div class="nav-right">
             <div class="status-dot"></div>
-            <div class="label" style="margin:0; color:#fff;">v1.1.5-PRD</div>
+            <div class="label" style="margin:0;color:#fff">v1.3.1-STABLE</div>
             <button class="connect-btn" id="connect-btn">CONNECT WALLET</button>
         </div>
     </header>
     <main>
         <canvas id="glcanvas"></canvas>
-
         <div id="left-dash" class="panel">
             <div class="label">System Environment</div>
             <div class="val fuji-text">AVALANCHE_FUJI_TESTNET</div>
-
             <div class="label">Integrated State</div>
             <div class="val" id="bridge-status">SYNCHRONIZED</div>
-
             <div class="label">Mathematical Entropy</div>
             <div class="val" id="ent">0.000000</div>
-
             <div class="label">Active Pulse</div>
             <div class="val" id="imp">0.000000</div>
         </div>
-
         <div id="right-dash" class="panel">
             <div class="label">Global Shard Coordinate</div>
             <div class="val" id="shard-coord">0.00, 0.00</div>
-
             <div class="label">Verification Code</div>
             <div class="val" id="v-hash">0x...8E21</div>
-
             <div class="label">Stakeholder Approval</div>
-            <div class="val" style="color:var(--accent);">20/20 CERTIFIED</div>
-
+            <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
             <div class="label">Legal Status</div>
-            <div style="font-size: 10px; color: #f00;">[100% COMPLIANT]</div>
+            <div style="font-size:10px;color:#f00">[100% COMPLIANT]</div>
         </div>
-
         <div id="event-monitor"></div>
-
         <div id="ctrl-grid">
             <div class="d-pad">
                 <div></div>
@@ -344,111 +337,137 @@
                 <button class="btn-main" id="shift-btn">EMIT SHIFT</button>
             </div>
         </div>
-
         <div id="modal-overlay">
             <div id="modal">
                 <div class="compliance-tag">COMPLIANCE CERTIFIED</div>
-                <div class="label" style="margin-bottom:20px; color:#fff;">Wallet Control Center</div>
-
-                <div style="background:#111; padding:20px; border:1px solid #333; margin-bottom:20px;">
+                <div class="label" style="margin-bottom:20px;color:#fff">Wallet Control Center</div>
+                <div style="background:#111;padding:20px;border:1px solid #333;margin-bottom:20px">
                     <div class="label">Primary Address</div>
-                    <div id="wallet-addr" style="font-size: 12px; color: var(--accent);">NOT_CONNECTED</div>
-
-                    <div style="display:flex; justify-content:space-between; margin-top:15px;">
+                    <div id="wallet-addr" style="font-size:12px;color:var(--accent)">NOT_CONNECTED</div>
+                    <div style="display:flex;justify-content:space-between;margin-top:15px">
                         <div>
                             <div class="label">AVAX_BALANCE</div>
-                            <div id="wallet-bal" style="color:#fff; font-size: 18px;">0.00</div>
+                            <div id="wallet-bal" style="color:#fff;font-size:18px">0.00</div>
                         </div>
-                        <div style="text-align:right;">
+                        <div style="text-align:right">
                             <div class="label">NETWORK</div>
-                            <div style="color:#fff; font-size: 11px;">Avalanche C-Chain</div>
+                            <div style="color:#fff;font-size:11px">Avalanche C-Chain</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="label">Testnet Activity log</div>
-                <div id="modal-log" style="height:100px; overflow:hidden; font-size: 10px; color:#555;">
-                    <!-- Logs will appear here -->
-                </div>
-
-                <button class="btn-main" id="close-modal" style="width:100%; margin-top:20px;">REVERT TO WORLD</button>
+                <div class="label">Testnet Activity Log</div>
+                <div id="modal-log" style="height:100px;overflow:hidden;font-size:10px;color:#555"></div>
+                <button class="btn-main" id="close-modal" style="width:100%;margin-top:20px">REVERT TO WORLD</button>
             </div>
         </div>
-
         <div id="toast"></div>
     </main>
-
     <script>
+        'use strict';
+        // CHAINSHIFT v1.3.1 - STABLE PRODUCTION
+        // FIX: Using reliable ethers.js CDN and verification
+
+        // WEBGL INIT
         const canvas = document.getElementById('glcanvas');
-        const gl = canvas.getContext('webgl');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false }) ||
+            canvas.getContext('experimental-webgl', { alpha: false, antialias: false, depth: false });
+
+        if (!gl) {
+            document.body.innerHTML = '<div style="color:#0fec85;font-family:monospace;padding:50px;font-size:24px">WebGL not supported.</div>';
+            throw new Error('WebGL not supported');
+        }
+
+        // Check Ethers Loading
+        if (typeof ethers === 'undefined') {
+            console.error('CRITICAL: Ethers.js not loaded!');
+            // Fallback or alert logic would go here, but logs will show in event monitor
+        }
+
+        // VERTEX SHADER
         const vsSource = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+
+        // FRAGMENT SHADER
         const fsSource = `
-            precision highp float;
-            uniform vec2 r;
-            uniform float t;
-            uniform float e;
-            uniform float i;
-            uniform vec2 o;
-            mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
-            
-            float map(vec3 p){
-                vec3 q = p;
-                p.xz *= rot(o.x);
-                p.yz *= rot(o.y);
-                p *= 0.5;
-                p.xz *= rot(t*0.1 + i*0.6);
-                
-                float scale = 1.0;
-                for(int j=0; j<8; j++) {
-                    p = abs(p) - vec3(0.6, 1.4, 1.0) * e * 0.3;
-                    p.xy *= rot(0.1);
-                    if(p.x < p.y) p.xy = p.yx;
-                    if(p.x < p.z) p.xz = p.zx;
-                    if(p.y < p.z) p.yz = p.zy;
-                    p = p * 1.95 - vec3(1.2, 0.3, 1.0) * (1.2 + i*1.5);
-                    scale *= 1.95;
-                }
-                float d = (length(p) - 1.8) / scale;
-                return d - sin(length(q)*6.0 - t*12.0) * 0.04 * i;
-            }
+precision highp float;
+uniform vec2 r;
+uniform float t;
+uniform float e;
+uniform float i;
+uniform vec2 o;
 
-            void main(){
-                vec2 u = (gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
-                vec3 ro = vec3(0, 0, -6.0);
-                vec3 rd = normalize(vec3(u, 1.8));
-                float d = 0.0, t_dist = 0.0;
-                for(int k=0; k<110; k++) {
-                    float res = map(ro + rd * t_dist);
-                    if(res < 0.0015 || t_dist > 25.0) break;
-                    t_dist += res;
-                }
-                vec3 col = vec3(0.005, 0.01, 0.03);
-                if(t_dist < 25.0) {
-                    vec3 p = ro + rd * t_dist, n = normalize(vec3(map(p+vec3(0.001,0,0))-map(p-vec3(0.001,0,0)),map(p+vec3(0,0.01,0))-map(p-vec3(0,0.01,0)),map(p+vec3(0,0,0.01))-map(p-vec3(0,0,0.01))));
-                    float diff = max(0.0, dot(n, normalize(vec3(1,2,-3))));
-                    col = mix(vec3(0.2, 0.8, 0.6), vec3(1.0, 0.3, 0.4), sin(e*0.3)*0.5+0.5) * diff;
-                    col += vec3(0.4, 0.9, 1.0) * pow(max(0.0, dot(reflect(rd, n), normalize(vec3(1,2,-3)))), 48.0) * (0.6 + i);
-                    col *= exp(-0.08 * t_dist);
-                }
-                col += vec3(0.05, 0.3, 0.6) * (3.0 / (1.0 + t_dist*t_dist));
-                col += vec3(var(--accent)) * i * 3.0; // Glow pulse
-                gl_FragColor = vec4(pow(col, vec3(0.4545)), 1.0);
-            }`;
+mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
 
-        // Boilerplate WebGL
+float map(vec3 p){
+    p.xz*=rot(o.x);
+    p.yz*=rot(o.y);
+    p*=0.5;
+    p.xz*=rot(t*0.1+i*0.6);
+    float scale=1.0;
+    for(int j=0;j<8;j++){
+        p=abs(p)-vec3(0.6,1.4,1.0)*e*0.3;
+        p.xy*=rot(0.1);
+        if(p.x<p.y)p.xy=p.yx;
+        if(p.x<p.z)p.xz=p.zx;
+        if(p.y<p.z)p.yz=p.zy;
+        p=p*1.95-vec3(1.2,0.3,1.0)*(1.2+i*1.5);
+        scale*=1.95;
+    }
+    float d=(length(p)-1.8)/scale;
+    return d-sin(length(p)*6.0-t*12.0)*0.04*i;
+}
+
+void main(){
+    vec2 u=(gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
+    vec3 ro=vec3(0,0,-6.0);
+    vec3 rd=normalize(vec3(u,1.8));
+    float td=0.0;
+    for(int k=0;k<110;k++){
+        float res=map(ro+rd*td);
+        if(res<0.0015||td>25.0)break;
+        td+=res;
+    }
+    vec3 col=vec3(0.005,0.01,0.03);
+    if(td<25.0){
+        vec3 p=ro+rd*td;
+        vec3 eps=vec3(0.001,0.0,0.0);
+        vec3 n=normalize(vec3(
+            map(p+eps.xyy)-map(p-eps.xyy),
+            map(p+eps.yxy)-map(p-eps.yxy),
+            map(p+eps.yyx)-map(p-eps.yyx)
+        ));
+        float diff=max(0.0,dot(n,normalize(vec3(1,2,-3))));
+        col=mix(vec3(0.2,0.8,0.6),vec3(1.0,0.3,0.4),sin(e*0.3)*0.5+0.5)*diff;
+        col+=vec3(0.4,0.9,1.0)*pow(max(0.0,dot(reflect(rd,n),normalize(vec3(1,2,-3)))),48.0)*(0.6+i);
+        col*=exp(-0.08*td);
+    }
+    col+=vec3(0.05,0.3,0.6)*(3.0/(1.0+td*td));
+    col+=vec3(0.059,0.925,0.522)*i*3.0; // Fixed RGB
+    gl_FragColor=vec4(pow(max(col,vec3(0.0)),vec3(0.4545)),1.0);
+}`;
+
+        // BOILERPLATE
         const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
         const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
         const program = gl.createProgram(); gl.attachShader(program, vs); gl.attachShader(program, fs); gl.linkProgram(program); gl.useProgram(program);
         const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, 0, 0, 0);
+        const pLoc = gl.getAttribLocation(program, 'p'); gl.enableVertexAttribArray(pLoc); gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
         const uR = gl.getUniformLocation(program, "r"), uT = gl.getUniformLocation(program, "t"), uE = gl.getUniformLocation(program, "e"), uI = gl.getUniformLocation(program, "i"), uO = gl.getUniformLocation(program, "o");
 
-        // State
-        const start = Date.now();
+        // STATE
+        const start = performance.now();
         let impulse = 0, orbitX = 0, orbitY = 0, address = null, balance = '0.00';
-        let keys = {};
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
+        const keys = {};
+
+        window.addEventListener('keydown', ev => keys[ev.code] = true);
+        window.addEventListener('keyup', ev => keys[ev.code] = false);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+        });
+        gl.viewport(0, 0, canvas.width, canvas.height);
 
         function logEvent(msg) {
             const m = document.getElementById('event-monitor');
@@ -457,105 +476,174 @@
             m.prepend(d);
             if (m.children.length > 5) m.removeChild(m.lastChild);
 
+            // Also log to modal
             const ml = document.getElementById('modal-log');
-            const dl = document.createElement('div');
-            dl.innerText = `[LOG] ${msg}`;
-            ml.prepend(dl);
+            if (ml) {
+                const dl = document.createElement('div');
+                dl.innerText = `[LOG] ${msg}`;
+                ml.prepend(dl);
+            }
         }
 
         function showToast(txt) {
-            const t = document.getElementById('toast'); t.innerText = txt; t.style.opacity = '1';
+            const t = document.getElementById('toast');
+            t.innerText = txt; t.style.opacity = '1';
             setTimeout(() => t.style.opacity = '0', 2000);
         }
 
-        // REAL WALLET LOGIC
+        // WALLET
         const connectBtn = document.getElementById('connect-btn');
         const modal = document.getElementById('modal-overlay');
 
         async function connectWallet() {
+            if (typeof ethers === 'undefined') {
+                logEvent('ERR: Ethers_Lib_Missing');
+                alert('Internal Error: Blockchain library failed to load. Please refresh.');
+                return;
+            }
+
             if (typeof window.ethereum !== 'undefined') {
                 try {
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
+                    await provider.send('eth_requestAccounts', []);
+
+                    // AUTO-SWITCH TO AVALANCHE FUJI TESTNET
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0xa869' }], // 43113 in hex
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: '0xa869',
+                                    chainName: 'Avalanche Fuji Testnet',
+                                    nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
+                                    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+                                    blockExplorerUrls: ['https://testnet.snowtrace.io/']
+                                }]
+                            });
+                        }
+                    }
+
                     const signer = provider.getSigner();
                     address = await signer.getAddress();
                     const balRaw = await provider.getBalance(address);
                     balance = ethers.utils.formatEther(balRaw);
 
                     connectBtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
+                    connectBtn.style.background = 'var(--accent)';
+                    connectBtn.style.color = '#000';
                     document.getElementById('wallet-addr').innerText = address;
                     document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
-                    logEvent(`WALLET_CONNECTED: ${address.slice(0, 10)}...`);
-                    showToast('REAL_WALLET_LINK_STABLE');
+
+                    logEvent('WALLET_ACTIVE: ' + address.slice(0, 8));
+                    showToast('CONNECTION_SECURE');
                 } catch (err) {
                     console.error(err);
-                    // Fallback to simulation if user denies or on mobile without injected
-                    simulateWallet();
+                    logEvent('WALLET_FAIL: ' + (err.message || 'Denied'));
                 }
             } else {
-                simulateWallet();
+                alert('MetaMask not detected!');
             }
-        }
-
-        function simulateWallet() {
-            address = "0x7128" + Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-            balance = "42.069";
-            connectBtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
-            document.getElementById('wallet-addr').innerText = address;
-            document.getElementById('wallet-bal').innerText = balance + ' AVAX (SIM)';
-            logEvent("WALLET_SIM: MetaMask_Injection_Bypassed");
-            showToast('CONNECTION_ESTABLISHED_LOCAL');
         }
 
         connectBtn.onclick = () => { if (!address) connectWallet(); else modal.classList.add('modal-active'); };
         document.getElementById('close-modal').onclick = () => modal.classList.remove('modal-active');
 
-        function triggerShift() {
+        async function triggerShift() {
+            if (!address) {
+                alert("CRITICAL: Connect Wallet first to emit on-chain shift.");
+                return;
+            }
+
             impulse = 1.0;
-            document.getElementById('bridge-status').innerText = 'PENDING_TX...';
+            document.getElementById('bridge-status').innerText = 'AWAITING_SIGNATURE...';
             document.getElementById('bridge-status').style.color = '#ff0';
-            const hash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-            document.getElementById('v-hash').innerText = hash.substring(0, 12) + '...';
-            logEvent(`CALLING: Shift_Contract_Emit(${Math.floor(Math.random() * 1000)})`);
 
-            setTimeout(() => {
-                document.getElementById('bridge-status').innerText = 'SYNCHRONIZED';
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+
+                // Encode current state into hex data for on-chain memorialization
+                // This makes the transaction 100% REAL and acts as an "On-Chain Audit Trail"
+                const currentEntropy = document.getElementById('ent').innerText;
+                const currentCoord = document.getElementById('shard-coord').innerText;
+                const message = `CHAINSHIFT_SYNC | ENTROPY:${currentEntropy} | COORD:${currentCoord}`;
+                const hexData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message));
+
+                logEvent('BLOCKCHAIN: Requesting Signature for Fuji C-Chain');
+
+                // Send a 0 AVAX transaction to self with the encoded data
+                const tx = await signer.sendTransaction({
+                    to: address,
+                    value: 0,
+                    data: hexData
+                });
+
+                document.getElementById('bridge-status').innerText = 'BROADCASTING_TX...';
+                document.getElementById('bridge-status').style.color = '#ff8800';
+
+                // Show real hash immediately
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${tx.hash.substring(0, 10)}... (VERIFY)</a>`;
+                logEvent(`BROADCASTED: ${tx.hash.substring(0, 15)}...`);
+
+                // Wait for network confirmation
+                const receipt = await tx.wait();
+
+                document.getElementById('bridge-status').innerText = 'SYNCHRONIZED_ONCHAIN';
                 document.getElementById('bridge-status').style.color = 'var(--accent)';
-                logEvent(`FINALIZED: Fuji_Block_Confirmed | Hash: ${hash.substring(0, 8)}`);
-                showToast('TRANSACTION_CONFIRMED');
-            }, 1000);
-        }
+                logEvent(`FINALIZED: Fuji_Block_Confirmed | Block: ${receipt.blockNumber}`);
+                showToast('ON-CHAIN SHIFT CONFIRMED');
 
+            } catch (error) {
+                console.error(error);
+                logEvent('TX_REJECTED: ' + (error.message || 'Signature denied/Failed'));
+                document.getElementById('bridge-status').innerText = 'SYNC_FAILED';
+                document.getElementById('bridge-status').style.color = '#f00';
+            }
+        }
         document.getElementById('shift-btn').onclick = triggerShift;
 
-        // Touch Controls
-        const btnMap = { 'up': 'KeyW', 'down': 'KeyS', 'left': 'KeyA', 'right': 'KeyD' };
-        Object.keys(btnMap).forEach(id => {
+        // TOUCH
+        const btnMap = { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD' };
+        for (const id in btnMap) {
             const b = document.getElementById(id);
-            b.onmousedown = b.ontouchstart = () => keys[btnMap[id]] = true;
-            b.onmouseup = b.ontouchend = () => keys[btnMap[id]] = false;
-        });
+            if (b) {
+                b.onmousedown = b.ontouchstart = () => keys[btnMap[id]] = true;
+                b.onmouseup = b.ontouchend = b.ontouchcancel = () => keys[btnMap[id]] = false;
+            }
+        }
 
         function loop() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            const time = (Date.now() - start) * 0.001;
-            if (keys['KeyW'] || keys['ArrowUp']) orbitY += 0.04;
-            if (keys['KeyS'] || keys['ArrowDown']) orbitY -= 0.04;
-            if (keys['KeyA'] || keys['ArrowLeft']) orbitX -= 0.04;
-            if (keys['KeyD'] || keys['ArrowRight']) orbitX += 0.04;
+            const time = (performance.now() - start) * 0.001;
+            if (keys.KeyW || keys.ArrowUp) orbitY += 0.04;
+            if (keys.KeyS || keys.ArrowDown) orbitY -= 0.04;
+            if (keys.KeyA || keys.ArrowLeft) orbitX -= 0.04;
+            if (keys.KeyD || keys.ArrowRight) orbitX += 0.04;
             impulse *= 0.94;
+
             const entropy = 2.4 + Math.sin(time * 0.5) * 1.8 + impulse * 5.0;
-            gl.uniform2f(uR, canvas.width, canvas.height); gl.uniform1f(uT, time); gl.uniform1f(uE, entropy); gl.uniform1f(uI, impulse); gl.uniform2f(uO, orbitX, orbitY);
+
+            gl.uniform2f(uR, canvas.width, canvas.height);
+            gl.uniform1f(uT, time);
+            gl.uniform1f(uE, entropy);
+            gl.uniform1f(uI, impulse);
+            gl.uniform2f(uO, orbitX, orbitY);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
+
             document.getElementById('ent').innerText = entropy.toFixed(6);
             document.getElementById('imp').innerText = impulse.toFixed(6);
             document.getElementById('shard-coord').innerText = orbitX.toFixed(2) + ', ' + orbitY.toFixed(2);
+
             requestAnimationFrame(loop);
         }
+
         loop();
-        logEvent("ENGINE: ChainShift_v1.1.5_Online");
-        logEvent("STATE: Shard_Root_Synchronized");
+        logEvent('SYSTEM: v1.3.1_Prod_Stable');
+        logEvent('GRAPHICS: Raymarching_SDF_Active');
     </script>
 </body>
 

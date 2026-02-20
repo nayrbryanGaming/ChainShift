@@ -1,20 +1,20 @@
 shader_type canvas_item;
 
 // ==============================================================================
-// CHAINSHIFT - CORE PRODUCTION :: PHASE 2 INTERACTION (SHIFT)
+// CHAINSHIFT - PRODUCTION SYSTEM
 // ==============================================================================
-// Pure procedural world rendered via Raymarching.
-// No external assets. 4K compliant. 60 FPS target.
+// Pure procedural raymarching renderer with on-chain state synchronization.
+// Zero external assets. Deterministic. 4K-optimized.
 // ==============================================================================
 
-uniform float u_entropy;      // Chaos factor
-uniform float u_phase;        // Evolution angle
-uniform float u_distortion;   // Spatial warping
-uniform vec3  u_color_seed;   // Base color palette
-uniform float u_time;         // Engine time
-uniform float u_impulse;      // SHIFT trigger (Phase 2)
+uniform float u_entropy : hint_range(0.5, 5.0) = 2.5;
+uniform float u_phase = 0.0;
+uniform float u_distortion : hint_range(-1.0, 2.0) = 0.5;
+uniform vec3  u_color_seed = vec3(0.1, 0.4, 0.8);
+uniform float u_time = 0.0;
+uniform float u_impulse : hint_range(0.0, 1.0) = 0.0;
 
-// CONSTANTS
+// CONSTANTS (Optimized for 4K @ 30+ FPS)
 const int MAX_STEPS = 128;
 const float MAX_DIST = 100.0;
 const float SURF_DIST = 0.001;

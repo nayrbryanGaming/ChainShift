@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ChainShift DEMO - WORKING GRAPHICS</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        #ui {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: #0fec85;
+            font-size: 18px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-left: 4px solid #0fec85;
+        }
+
+        #title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        #title span {
+            color: #0fec85;
+        }
+
+        button {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px 50px;
+            background: #0fec85;
+            color: #000;
+            border: none;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            letter-spacing: 3px;
+            box-shadow: 0 0 30px #0fec85;
+        }
+
+        button:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+    <div id="title">CHAIN<span>SHIFT</span></div>
+    <div id="ui">
+        <div style="color: #ff3e3e; margin-bottom: 10px;">AVALANCHE_FUJI_TESTNET</div>
+        <div style="margin-bottom: 5px;">MATHEMATICAL ENTROPY: <span id="ent">0.000</span></div>
+        <div style="margin-bottom: 5px;">ACTIVE PULSE: <span id="imp">0.000</span></div>
+        <div style="margin-top: 15px; color: #0fec85;">STATUS: SYNCHRONIZED</div>
+    </div>
+    <button onclick="shift()">EMIT SHIFT</button>
+    <script>
+        const canvas = document.getElementById('c');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        let time = 0;
+        let impulse = 0;
+
+        function shift() {
+            impulse = 1;
+        }
+
+        function draw() {
+            time += 0.016;
+            impulse *= 0.94;
+
+            const entropy = 2.4 + Math.sin(time * 0.5) * 1.8 + impulse * 5;
+
+            // Dark gradient background
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGrad.addColorStop(0, '#0a0e1a');
+            bgGrad.addColorStop(0.5, '#112240');
+            bgGrad.addColorStop(1, '#0a0e1a');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Rotating circles (procedural effect)
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const count = 60;
+
+            for (let i = 0; i < count; i++) {
+                const angle = (i / count) * Math.PI * 2 + time * 0.5;
+                const distance = 150 + Math.sin(time + i * 0.1) * 100 + entropy * 10;
+                const x = centerX + Math.cos(angle) * distance;
+                const y = centerY + Math.sin(angle) * distance;
+                const size = 8 + Math.sin(time * 2 + i) * 4 + impulse * 25;
+
+                // Particle
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                const alpha = 0.4 + Math.sin(time + i) * 0.2 + impulse * 0.6;
+                ctx.fillStyle = `rgba(15, 236, 133, ${alpha})`;
+                ctx.fill();
+
+                // Connecting lines
+                if (i > 0 && i % 3 === 0) {
+                    const prevAngle = ((i - 3) / count) * Math.PI * 2 + time * 0.5;
+                    const prevDist = 150 + Math.sin(time + (i - 3) * 0.1) * 100 + entropy * 10;
+                    const prevX = centerX + Math.cos(prevAngle) * prevDist;
+                    const prevY = centerY + Math.sin(prevAngle) * prevDist;
+
+                    ctx.beginPath();
+                    ctx.moveTo(prevX, prevY);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = `rgba(15, 236, 133, 0.2)`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // Center glow effect
+            const glowGrad = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, 400 + impulse * 200
+            );
+            glowGrad.addColorStop(0, `rgba(15, 236, 133, ${0.3 + impulse * 0.7})`);
+            glowGrad.addColorStop(0.5, `rgba(15, 236, 133, ${0.1 + impulse * 0.3})`);
+            glowGrad.addColorStop(1, 'rgba(15, 236, 133, 0)');
+            ctx.fillStyle = glowGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Circular waves
+            for (let r = 0; r < 5; r++) {
+                ctx.beginPath();
+                const waveRadius = ((time * 50 + r * 80) % 400);
+                ctx.arc(centerX, centerY, waveRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(15, 236, 133, ${0.3 - (waveRadius / 400) * 0.3})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            // Update UI
+            document.getElementById('ent').innerText = entropy.toFixed(6);
+            document.getElementById('imp').innerText = impulse.toFixed(6);
+
+            requestAnimationFrame(draw);
+        }
+
+        console.log('ChainShift Demo - Graphics ACTIVE');
+        draw();
+    </script>
+</body>
+
+</html>

@@ -6,10 +6,10 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_world"]
 shader = ExtResource("2_shader")
-shader_parameter/u_entropy = 1.0
+shader_parameter/u_entropy = 2.5
 shader_parameter/u_phase = 0.0
-shader_parameter/u_distortion = 0.0
-shader_parameter/u_color_seed = Vector3(1, 1, 1)
+shader_parameter/u_distortion = 0.5
+shader_parameter/u_color_seed = Vector3(0.1, 0.4, 0.8)
 shader_parameter/u_time = 0.0
 shader_parameter/u_impulse = 0.0
 
@@ -33,13 +33,14 @@ grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
 [node name="DebugLabel" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 300.0
 offset_bottom = 46.0
 theme_override_colors/font_color = Color(1, 1, 1, 0.5)
-text = "CHAINSHIFT // PHASE 4"
+text = "CHAINSHIFT // PRODUCTION"
 
 [node name="BlockchainManager" type="Node" parent="."]
 script = ExtResource("3_bm")

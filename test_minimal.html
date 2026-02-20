@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAINSHIFT TEST - Minimal</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+    <script>
+        const canvas = document.getElementById('c');
+        const gl = canvas.getContext('webgl');
+        if (!gl) { alert('WebGL not supported!'); }
+
+        const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+        const fs = `
+            precision highp float;
+            uniform vec2 r;
+            uniform float t;
+            void main(){
+                vec2 u = (gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
+                float d = length(u) - 0.5;
+                vec3 col = d < 0.0 ? vec3(0.0, 1.0, 0.5) : vec3(0.1);
+                col += vec3(0.5, 0.8, 1.0) * (1.0 - abs(d)) * 0.5;
+                gl_FragColor = vec4(col, 1.0);
+            }`;
+
+        const vsh = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vsh, vs);
+        gl.compileShader(vsh);
+        if (!gl.getShaderParameter(vsh, gl.COMPILE_STATUS)) {
+            alert('VS ERROR: ' + gl.getShaderInfoLog(vsh));
+        }
+
+        const fsh = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fsh, fs);
+        gl.compileShader(fsh);
+        if (!gl.getShaderParameter(fsh, gl.COMPILE_STATUS)) {
+            alert('FS ERROR: ' + gl.getShaderInfoLog(fsh));
+        }
+
+        const prog = gl.createProgram();
+        gl.attachShader(prog, vsh);
+        gl.attachShader(prog, fsh);
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+            alert('LINK ERROR: ' + gl.getProgramInfoLog(prog));
+        }
+        gl.useProgram(prog);
+
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+        const uR = gl.getUniformLocation(prog, "r");
+        const uT = gl.getUniformLocation(prog, "t");
+
+        const start = Date.now();
+        function loop() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            gl.viewport(0, 0, canvas.width, canvas.height);
+            const time = (Date.now() - start) * 0.001;
+            gl.uniform2f(uR, canvas.width, canvas.height);
+            gl.uniform1f(uT, time);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+            requestAnimationFrame(loop);
+        }
+        loop();
+        console.log('MINIMAL TEST RUNNING - You should see a green circle');
+    </script>
+</body>
+
+</html>
