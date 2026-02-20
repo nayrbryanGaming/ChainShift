@@ -507,21 +507,37 @@ void main(){
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     await provider.send('eth_requestAccounts', []);
 
-                    // AUTO-SWITCH TO AVALANCHE FUJI TESTNET
+                    // SECURE CONFIG FETCH FROM VERCEL SERVERLESS ENV
+                    let envConfig = {
+                        chainName: 'Avalanche Fuji Testnet',
+                        chainId: '43113',
+                        rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc'
+                    };
+                    try {
+                        const cfgRes = await fetch('/api/config');
+                        if (cfgRes.ok) envConfig = await cfgRes.json();
+                        logEvent('ENV_SYNC: Vercel_Variables_Loaded');
+                    } catch (e) {
+                        console.warn('Using Local Fallback Env');
+                    }
+
+                    const hexChainId = '0x' + Number(envConfig.chainId).toString(16);
+
+                    // AUTO-SWITCH TO CONFIGURED TARGET NETWORK
                     try {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0xa869' }], // 43113 in hex
+                            params: [{ chainId: hexChainId }],
                         });
                     } catch (switchError) {
                         if (switchError.code === 4902) {
                             await window.ethereum.request({
                                 method: 'wallet_addEthereumChain',
                                 params: [{
-                                    chainId: '0xa869',
-                                    chainName: 'Avalanche Fuji Testnet',
+                                    chainId: hexChainId,
+                                    chainName: envConfig.chainName,
                                     nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
-                                    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+                                    rpcUrls: [envConfig.rpcUrl],
                                     blockExplorerUrls: ['https://testnet.snowtrace.io/']
                                 }]
                             });
