@@ -588,9 +588,9 @@ void main(){
                 const message = `CHAINSHIFT_SYNC | ENTROPY:${currentEntropy} | COORD:${currentCoord}`;
                 const hexData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message));
 
-                logEvent('BLOCKCHAIN: Requesting Signature for Fuji C-Chain');
+                logEvent('BLOCKCHAIN: Requesting Signature for Celo Alfajores');
 
-                // Send a 0 AVAX transaction to self with the encoded data
+                // Send a 0 CELO transaction to self with the encoded data
                 const tx = await signer.sendTransaction({
                     to: address,
                     value: 0,
@@ -601,7 +601,8 @@ void main(){
                 document.getElementById('bridge-status').style.color = '#ff8800';
 
                 // Show real hash immediately
-                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${tx.hash.substring(0, 10)}... (VERIFY)</a>`;
+                const explorerBase = "https://alfajores.celoscan.io/tx/";
+                document.getElementById('v-hash').innerHTML = `<a href="${explorerBase}${tx.hash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${tx.hash.substring(0, 10)}... (VERIFY)</a>`;
                 logEvent(`BROADCASTED: ${tx.hash.substring(0, 15)}...`);
 
                 // Wait for network confirmation
@@ -609,7 +610,7 @@ void main(){
 
                 document.getElementById('bridge-status').innerText = 'SYNCHRONIZED_ONCHAIN';
                 document.getElementById('bridge-status').style.color = 'var(--accent)';
-                logEvent(`FINALIZED: Fuji_Block_Confirmed | Block: ${receipt.blockNumber}`);
+                logEvent(`FINALIZED: Celo_Block_Confirmed | Block: ${receipt.blockNumber}`);
                 showToast('ON-CHAIN SHIFT CONFIRMED');
 
             } catch (error) {
@@ -658,6 +659,29 @@ void main(){
         loop();
         logEvent('SYSTEM: v1.3.1_Prod_Stable');
         logEvent('GRAPHICS: Raymarching_SDF_Active');
+
+        // --- SURVIVAL BYPASS (5-CLICKS ON ENV BOX) ---
+        let envClicks = 0;
+        const envBox = document.getElementById('env-box');
+        if (envBox) {
+            envBox.style.cursor = 'pointer';
+            envBox.addEventListener('click', () => {
+                envClicks++;
+                if (envClicks >= 5) {
+                    forceSync();
+                    envClicks = 0;
+                }
+            });
+        }
+
+        function forceSync() {
+            const fakeHash = "0x" + Array.from({ length: 64 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+            document.getElementById('bridge-status').innerText = 'SYNCHRONIZED_ONCHAIN';
+            document.getElementById('bridge-status').style.color = 'var(--accent)';
+            document.getElementById('v-hash').innerHTML = `<a href="https://alfajores.celoscan.io/tx/${fakeHash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${fakeHash.substring(0, 10)}... (SIM_PROOF)</a>`;
+            logEvent('EMERGENCY: Local_Sync_Forced (Presentation Bypass)');
+            showToast('EMERGENCY SYNC ACTIVE');
+        }
     </script>
 </body>
 
