@@ -659,29 +659,6 @@ void main(){
         loop();
         logEvent('SYSTEM: v1.3.1_Prod_Stable');
         logEvent('GRAPHICS: Raymarching_SDF_Active');
-
-        // --- SURVIVAL BYPASS (5-CLICKS ON ENV BOX) ---
-        let envClicks = 0;
-        const envBox = document.getElementById('env-box');
-        if (envBox) {
-            envBox.style.cursor = 'pointer';
-            envBox.addEventListener('click', () => {
-                envClicks++;
-                if (envClicks >= 5) {
-                    forceSync();
-                    envClicks = 0;
-                }
-            });
-        }
-
-        function forceSync() {
-            const fakeHash = "0x" + Array.from({ length: 64 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
-            document.getElementById('bridge-status').innerText = 'SYNCHRONIZED_ONCHAIN';
-            document.getElementById('bridge-status').style.color = 'var(--accent)';
-            document.getElementById('v-hash').innerHTML = `<a href="https://alfajores.celoscan.io/tx/${fakeHash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${fakeHash.substring(0, 10)}... (SIM_PROOF)</a>`;
-            logEvent('EMERGENCY: Local_Sync_Forced (Presentation Bypass)');
-            showToast('EMERGENCY SYNC ACTIVE');
-        }
     </script>
 </body>
 
