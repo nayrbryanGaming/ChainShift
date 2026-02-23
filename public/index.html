@@ -550,10 +550,8 @@ void main(){
                     connectBtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
                     connectBtn.style.background = 'var(--accent)';
                     connectBtn.style.color = '#000';
-                    document.getElementById('wallet-addr').innerText = address;
                     document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
-
-                    logEvent('WALLET_ACTIVE: ' + address.slice(0, 8));
+                    document.getElementById('wallet-addr').innerText = address.substring(0, 6) + '...' + address.substring(38);
                     showToast('CONNECTION_SECURE');
                 } catch (err) {
                     console.error(err);
@@ -588,9 +586,9 @@ void main(){
                 const message = `CHAINSHIFT_SYNC | ENTROPY:${currentEntropy} | COORD:${currentCoord}`;
                 const hexData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message));
 
-                logEvent('BLOCKCHAIN: Requesting Signature for Celo Alfajores');
+                logEvent('BLOCKCHAIN: Requesting Signature for Avalanche Fuji');
 
-                // Send a 0 CELO transaction to self with the encoded data
+                // Send a 0 AVAX transaction to self with the encoded data
                 const tx = await signer.sendTransaction({
                     to: address,
                     value: 0,
@@ -601,7 +599,7 @@ void main(){
                 document.getElementById('bridge-status').style.color = '#ff8800';
 
                 // Show real hash immediately
-                const explorerBase = "https://alfajores.celoscan.io/tx/";
+                const explorerBase = "https://testnet.snowtrace.io/tx/";
                 document.getElementById('v-hash').innerHTML = `<a href="${explorerBase}${tx.hash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${tx.hash.substring(0, 10)}... (VERIFY)</a>`;
                 logEvent(`BROADCASTED: ${tx.hash.substring(0, 15)}...`);
 
@@ -610,7 +608,7 @@ void main(){
 
                 document.getElementById('bridge-status').innerText = 'SYNCHRONIZED_ONCHAIN';
                 document.getElementById('bridge-status').style.color = 'var(--accent)';
-                logEvent(`FINALIZED: Celo_Block_Confirmed | Block: ${receipt.blockNumber}`);
+                logEvent(`FINALIZED: Fuji_Block_Confirmed | Block: ${receipt.blockNumber}`);
                 showToast('ON-CHAIN SHIFT CONFIRMED');
 
             } catch (error) {
