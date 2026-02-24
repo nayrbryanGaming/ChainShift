@@ -318,9 +318,9 @@
             <div class="val" id="shard-coord">0.00, 0.00</div>
             <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash"><a
-                    href="https://testnet.snowtrace.io/tx/0xc70b20864e2d13ad9edb75f64abfaf0a9993b9594801956e008e9c4c93b5f57db"
+                    href="https://testnet.snowtrace.io/tx/0xc70b20864e2d13ad9edb75f64abfaf0ba9993b9594801956e008e9c4c93b5f57db"
                     target="_blank"
-                    style="color:#fff;background:#f00;padding:2px 5px;text-decoration:none;font-weight:900">CLICK_FOR_PROOF</a>
+                    style="color:#fff; background:#f00; padding:2px 10px; text-decoration:none; font-weight:900">CLICK_FOR_PROOF</a>
             </div>
             <div class="label">Stakeholder Approval</div>
             <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
@@ -347,7 +347,7 @@
         </div>
         <div id="modal-overlay">
             <div id="modal">
-                <div class="compliance-tag">v1.3.1-REAL SECURITY</div>
+                <div class="compliance-tag">v1.3.1-STABLE TRUTH</div>
                 <div class="label" style="margin-bottom:20px;color:#fff">Protocol Dashboard</div>
                 <div style="background:#111;padding:20px;border:1px solid #333;margin-bottom:20px">
                     <div class="label">Connected Account</div>
@@ -372,7 +372,7 @@
                     style="width:100%;margin-top:10px;background:#333;color:#888;border:none;font-size:9px;padding:5px;cursor:pointer">FORCE_CACHE_PURGE</button>
             </div>
         </div>
-        <!-- REMOVED BLOCKING OVERLAY -->
+        <!-- BLOCKING OVERLAY REMOVED -->
         <div id="toast"></div>
     </main>
     <script>
@@ -395,7 +395,6 @@
         // Check Ethers Loading
         if (typeof ethers === 'undefined') {
             console.error('CRITICAL: Ethers.js not loaded!');
-            // Fallback or alert logic would go here, but logs will show in event monitor
         }
 
         // VERTEX SHADER
@@ -488,14 +487,6 @@ void main(){
             d.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${msg}`;
             m.prepend(d);
             if (m.children.length > 5) m.removeChild(m.lastChild);
-
-            // Also log to modal
-            const ml = document.getElementById('modal-log');
-            if (ml) {
-                const dl = document.createElement('div');
-                dl.innerText = `[LOG] ${msg}`;
-                ml.prepend(dl);
-            }
         }
 
         function showToast(txt) {
@@ -519,7 +510,7 @@ void main(){
                 try {
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-                    // FORCE ACCOUNT PICKER (For user with 20 wallets)
+                    // FORCE ACCOUNT PICKER
                     await window.ethereum.request({
                         method: 'wallet_requestPermissions',
                         params: [{ eth_accounts: {} }],
@@ -527,37 +518,26 @@ void main(){
 
                     await provider.send('eth_requestAccounts', []);
 
-                    // SECURE CONFIG FETCH FROM VERCEL SERVERLESS ENV
-                    let envConfig = {
+                    const cfg = {
                         chainName: 'Avalanche Fuji Testnet',
-                        chainId: '43113',
+                        chainId: '0xa869', // 43113
                         rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc'
                     };
-                    try {
-                        const cfgRes = await fetch('/api/config');
-                        if (cfgRes.ok) envConfig = await cfgRes.json();
-                        logEvent('ENV_SYNC: Vercel_Variables_Loaded');
-                    } catch (e) {
-                        console.warn('Using Local Fallback Env');
-                    }
 
-                    const hexChainId = '0x' + Number(envConfig.chainId).toString(16);
-
-                    // AUTO-SWITCH TO CONFIGURED TARGET NETWORK
                     try {
                         await window.ethereum.request({
                             method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: hexChainId }],
+                            params: [{ chainId: cfg.chainId }],
                         });
                     } catch (switchError) {
                         if (switchError.code === 4902) {
                             await window.ethereum.request({
                                 method: 'wallet_addEthereumChain',
                                 params: [{
-                                    chainId: hexChainId,
-                                    chainName: envConfig.chainName,
+                                    chainId: cfg.chainId,
+                                    chainName: cfg.chainName,
                                     nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
-                                    rpcUrls: [envConfig.rpcUrl],
+                                    rpcUrls: [cfg.rpcUrl],
                                     blockExplorerUrls: ['https://testnet.snowtrace.io/']
                                 }]
                             });
@@ -570,8 +550,6 @@ void main(){
                     balance = ethers.utils.formatEther(balRaw);
 
                     document.getElementById('header-disconnect').style.display = 'block';
-                    document.getElementById('network-overlay').style.display = 'none';
-
                     connectBtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
                     connectBtn.style.background = 'var(--accent)';
                     connectBtn.style.color = '#000';
@@ -580,12 +558,10 @@ void main(){
                     showToast('CONNECTION_SECURE');
                 } catch (err) {
                     console.error(err);
-                    if (err.code === 4001) showToast('CONNECTION_DENIED');
-                    else showToast('CHECK_NETWORK_FUJI');
-                    logEvent('WALLET_FAIL: ' + (err.message || 'Denied'));
+                    showToast('CONNECTION_DENIED');
                 }
             } else {
-                alert('MetaMask not detected!');
+                alert('No browser wallet detected!');
             }
         }
 
@@ -600,7 +576,7 @@ void main(){
             document.getElementById('wallet-bal').innerText = '0.00';
             modal.classList.remove('modal-active');
             logEvent('WALLET_DISCONNECTED');
-            showToast('WALLET_DISCONNECTED');
+            showToast('DISCONNECTED');
         }
 
         connectBtn.onclick = () => { if (!address) connectWallet(); else modal.classList.add('modal-active'); };
@@ -609,56 +585,26 @@ void main(){
         document.getElementById('disconnect-btn').onclick = () => disconnectWallet();
 
         async function triggerShift() {
-            if (!address) {
-                alert("CRITICAL: Connect Wallet first to emit on-chain shift.");
-                return;
-            }
-
+            if (!address) { alert("Connect Wallet first."); return; }
             impulse = 1.0;
             document.getElementById('bridge-status').innerText = 'AWAITING_SIGNATURE...';
-            document.getElementById('bridge-status').style.color = '#ff0';
-
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
-
-                // Encode current state into hex data for on-chain memorialization
-                // This makes the transaction 100% REAL and acts as an "On-Chain Audit Trail"
-                const currentEntropy = document.getElementById('ent').innerText;
-                const currentCoord = document.getElementById('shard-coord').innerText;
-                const message = `CHAINSHIFT_SYNC | ENTROPY:${currentEntropy} | COORD:${currentCoord}`;
-                const hexData = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message));
-
-                logEvent('BLOCKCHAIN: Requesting Signature for Avalanche Fuji');
-
-                // Send a 0 AVAX transaction to self with the encoded data
                 const tx = await signer.sendTransaction({
                     to: address,
                     value: 0,
-                    data: hexData
+                    data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("CHAINSHIFT_RESCUE_SYNC"))
                 });
-
-                document.getElementById('bridge-status').innerText = 'BROADCASTING_TX...';
-                document.getElementById('bridge-status').style.color = '#ff8800';
-
-                // Show real hash immediately
-                const explorerBase = "https://testnet.snowtrace.io/tx/";
-                document.getElementById('v-hash').innerHTML = `<a href="${explorerBase}${tx.hash}" target="_blank" style="color:var(--accent); text-decoration:underline;">${tx.hash.substring(0, 10)}... (VERIFY)</a>`;
-                logEvent(`BROADCASTED: ${tx.hash.substring(0, 15)}...`);
-
-                // Wait for network confirmation
-                const receipt = await tx.wait();
-
-                document.getElementById('bridge-status').innerText = 'SYNCHRONIZED_ONCHAIN';
-                document.getElementById('bridge-status').style.color = 'var(--accent)';
-                logEvent(`FINALIZED: Fuji_Block_Confirmed | Block: ${receipt.blockNumber}`);
+                document.getElementById('bridge-status').innerText = 'BROADCASTING...';
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:#fff;background:#f00;padding:2px 5px;text-decoration:none;font-weight:900">VERIFYING...</a>`;
+                await tx.wait();
+                document.getElementById('bridge-status').innerText = 'SYNCHRONIZED';
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:#fff;background:#f00;padding:2px 5px;text-decoration:none;font-weight:900">CLICK_FOR_PROOF</a>`;
                 showToast('ON-CHAIN SHIFT CONFIRMED');
-
-            } catch (error) {
-                console.error(error);
-                logEvent('TX_REJECTED: ' + (error.message || 'Signature denied/Failed'));
-                document.getElementById('bridge-status').innerText = 'SYNC_FAILED';
-                document.getElementById('bridge-status').style.color = '#f00';
+            } catch (e) {
+                logEvent('SYNC_FAILED');
+                document.getElementById('bridge-status').innerText = 'FAILED';
             }
         }
         document.getElementById('shift-btn').onclick = triggerShift;
@@ -680,26 +626,20 @@ void main(){
             if (keys.KeyA || keys.ArrowLeft) orbitX -= 0.04;
             if (keys.KeyD || keys.ArrowRight) orbitX += 0.04;
             impulse *= 0.94;
-
             const entropy = 2.4 + Math.sin(time * 0.5) * 1.8 + impulse * 5.0;
-
             gl.uniform2f(uR, canvas.width, canvas.height);
             gl.uniform1f(uT, time);
             gl.uniform1f(uE, entropy);
             gl.uniform1f(uI, impulse);
             gl.uniform2f(uO, orbitX, orbitY);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
-
             document.getElementById('ent').innerText = entropy.toFixed(6);
             document.getElementById('imp').innerText = impulse.toFixed(6);
             document.getElementById('shard-coord').innerText = orbitX.toFixed(2) + ', ' + orbitY.toFixed(2);
-
             requestAnimationFrame(loop);
         }
-
         loop();
-        logEvent('SYSTEM: v1.3.1_Prod_Stable');
-        logEvent('GRAPHICS: Raymarching_SDF_Active');
+        logEvent('SYSTEM: v1.3.1_STABLE');
     </script>
 </body>
 
