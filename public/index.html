@@ -318,9 +318,9 @@
             <div class="val" id="shard-coord">0.00, 0.00</div>
             <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash"><a
-                    href="https://testnet.snowtrace.io/tx/0xc70b20864e2d13ad9edb75f64abfaf0ba9993b9594801956e008e9c4c93b5f57db"
+                    href="https://testnet.snowtrace.io/tx/0xc70b20864e2d13ad9edb75f64abfaf0a993b9594801956e008e9c4c93b5f57db"
                     target="_blank"
-                    style="color:#fff; background:#f00; padding:2px 10px; text-decoration:none; font-weight:900">CLICK_FOR_PROOF</a>
+                    style="color:#fff; background:#f00; padding:4px 12px; text-decoration:none; font-weight:900; border-radius:2px; display:inline-block; margin-top:5px">CLICK_FOR_PROOF</a>
             </div>
             <div class="label">Stakeholder Approval</div>
             <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
@@ -329,7 +329,7 @@
             <div class="label" style="margin-top:10px">Mission History</div>
             <div style="font-size:9px"><a
                     href="https://testnet.snowtrace.io/address/0x685cd40e2e458affa00fe55e4900e478cb66db70"
-                    target="_blank" style="color:#fff">Audit Trail #1 (d70)</a></div>
+                    target="_blank" style="color:#fff;text-decoration:underline">Audit Trail (d70)</a></div>
         </div>
         <div id="event-monitor"></div>
         <div id="ctrl-grid">
@@ -368,8 +368,9 @@
                     DISCONNECT then CONNECT again.</div>
                 <button id="close-modal" class="btn-sq"
                     style="width:100%;margin-top:20px;height:40px">REVERT_TO_WORLD</button>
-                <button onclick="location.reload(true)"
-                    style="width:100%;margin-top:10px;background:#333;color:#888;border:none;font-size:9px;padding:5px;cursor:pointer">FORCE_CACHE_PURGE</button>
+                <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);"
+                    style="width:100%;margin-top:10px;background:#333;color:#888;border:none;font-size:9px;padding:8px;cursor:pointer;font-weight:bold">HARD_RESET_PROTOCOL
+                    (PURGE CACHE)</button>
             </div>
         </div>
         <!-- BLOCKING OVERLAY REMOVED -->
