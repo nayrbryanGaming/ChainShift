@@ -316,10 +316,11 @@
         <div id="right-dash" class="panel">
             <div class="label">Global Shard Coordinate</div>
             <div class="val" id="shard-coord">0.00, 0.00</div>
-            <div class="label">Verification Code</div>
+            <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash"><a
                     href="https://testnet.snowtrace.io/tx/0xc70b20864e2d13ad9edb75f64abfaf0a9993b9594801956e008e9c4c93b5f57db"
-                    target="_blank" style="color:var(--accent);text-decoration:underline">0xc70b...57db (VERIFY)</a>
+                    target="_blank"
+                    style="color:#fff;background:#f00;padding:2px 5px;text-decoration:none;font-weight:900">CLICK_FOR_PROOF</a>
             </div>
             <div class="label">Stakeholder Approval</div>
             <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
@@ -371,14 +372,7 @@
                     style="width:100%;margin-top:10px;background:#333;color:#888;border:none;font-size:9px;padding:5px;cursor:pointer">FORCE_CACHE_PURGE</button>
             </div>
         </div>
-        <div id="network-overlay"
-            style="position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;display:none;place-items:center;text-align:center">
-            <div>
-                <h1 style="color:#f00">WRONG NETWORK DETECTED</h1>
-                <p style="color:#fff">This protocol REQUIRES Avalanche Fuji Testnet.</p>
-                <button onclick="connectWallet()" class="btn-main" style="width:250px">SWITCH TO FUJI NOW</button>
-            </div>
-        </div>
+        <!-- REMOVED BLOCKING OVERLAY -->
         <div id="toast"></div>
     </main>
     <script>
@@ -587,7 +581,7 @@ void main(){
                 } catch (err) {
                     console.error(err);
                     if (err.code === 4001) showToast('CONNECTION_DENIED');
-                    else document.getElementById('network-overlay').style.display = 'grid';
+                    else showToast('CHECK_NETWORK_FUJI');
                     logEvent('WALLET_FAIL: ' + (err.message || 'Denied'));
                 }
             } else {
