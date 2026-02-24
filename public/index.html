@@ -350,10 +350,13 @@
                         <div style="text-align:right">
                             <div class="label">NETWORK</div>
                             <div style="color:#fff;font-size:11px">Avalanche C-Chain</div>
+                            <button id="disconnect-btn"
+                                style="background:#f00;color:#fff;border:none;padding:5px 12px;font-size:10px;font-weight:800;cursor:pointer;margin-top:5px">DISCONNECT</button>
                         </div>
                     </div>
                 </div>
-                <div class="label">Testnet Activity Log</div>
+                <div class="label" style="text-align:center;color:#4a5568">Ensure Wallet is set to Avalanche Fuji
+                    Testnet</div>
                 <div id="modal-log" style="height:100px;overflow:hidden;font-size:10px;color:#555"></div>
                 <button class="btn-main" id="close-modal" style="width:100%;margin-top:20px">REVERT TO WORLD</button>
             </div>
@@ -562,8 +565,22 @@ void main(){
             }
         }
 
+        async function disconnectWallet() {
+            address = null;
+            balance = '0.00';
+            connectBtn.innerText = 'CONNECT WALLET';
+            connectBtn.style.background = 'rgba(15, 236, 133, 0.05)';
+            connectBtn.style.color = 'var(--accent)';
+            document.getElementById('wallet-addr').innerText = 'NOT_CONNECTED';
+            document.getElementById('wallet-bal').innerText = '0.00';
+            modal.classList.remove('modal-active');
+            logEvent('WALLET_DISCONNECTED');
+            showToast('WALLET_DISCONNECTED');
+        }
+
         connectBtn.onclick = () => { if (!address) connectWallet(); else modal.classList.add('modal-active'); };
         document.getElementById('close-modal').onclick = () => modal.classList.remove('modal-active');
+        document.getElementById('disconnect-btn').onclick = () => disconnectWallet();
 
         async function triggerShift() {
             if (!address) {
