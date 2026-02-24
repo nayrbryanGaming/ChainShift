@@ -506,6 +506,13 @@ void main(){
             if (typeof window.ethereum !== 'undefined') {
                 try {
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+                    // FORCE ACCOUNT PICKER (For user with 20 wallets)
+                    await window.ethereum.request({
+                        method: 'wallet_requestPermissions',
+                        params: [{ eth_accounts: {} }],
+                    });
+
                     await provider.send('eth_requestAccounts', []);
 
                     // SECURE CONFIG FETCH FROM VERCEL SERVERLESS ENV
