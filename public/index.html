@@ -320,7 +320,7 @@
             <div class="val" id="v-hash"><a
                     href="https://testnet.snowtrace.io/tx/0xc70b20864e2d13ad9edb75f64abfaf0a993b9594801956e008e9c4c93b5f57db"
                     target="_blank"
-                    style="color:#fff; background:#f00; padding:4px 12px; text-decoration:none; font-weight:900; border-radius:2px; display:inline-block; margin-top:5px">CLICK_FOR_PROOF</a>
+                    style="color:#fff; background:#f00; padding:10px 20px; text-decoration:none; font-weight:900; border-radius:4px; display:inline-block; margin-top:10px; box-shadow: 0 0 20px rgba(255,0,0,0.5)">CLICK_FOR_PROOF</a>
             </div>
             <div class="label">Stakeholder Approval</div>
             <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
@@ -601,7 +601,7 @@ void main(){
                 document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:#fff;background:#f00;padding:2px 5px;text-decoration:none;font-weight:900">VERIFYING...</a>`;
                 await tx.wait();
                 document.getElementById('bridge-status').innerText = 'SYNCHRONIZED';
-                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:#fff;background:#f00;padding:2px 5px;text-decoration:none;font-weight:900">CLICK_FOR_PROOF</a>`;
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:#fff;background:#f00;padding:10px 20px;text-decoration:none;font-weight:900;border-radius:4px;box-shadow: 0 0 20px rgba(255,0,0,0.5)">CLICK_FOR_PROOF</a>`;
                 showToast('ON-CHAIN SHIFT CONFIRMED');
             } catch (e) {
                 logEvent('SYNC_FAILED');
