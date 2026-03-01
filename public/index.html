@@ -294,6 +294,8 @@
     <header>
         <div class="logo">CHAIN<span>SHIFT</span></div>
         <div class="nav-right">
+            <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);"
+                style="background:#333;color:#888;border:1px solid #444;padding:4px 10px;font-size:9px;font-weight:800;border-radius:2px;cursor:pointer;margin-right:10px">RESET_CORE</button>
             <div class="status-dot"></div>
             <div class="label" style="margin:0;color:#fff">v1.3.1-STABLE</div>
             <button class="connect-btn" id="connect-btn">CONNECT WALLET</button>
@@ -318,15 +320,19 @@
             <div class="val" id="shard-coord">0.00, 0.00</div>
             <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash">
-                <div style="color:#4a5568; font-size:10px; margin-top:10px; font-weight:900;">CONNECT_TO_VERIFY</div>
+                <a href="https://testnet.snowtrace.io/address/0x685cd40e2e458affa00fe55e4900e478cb66db70"
+                    target="_blank" id="proof-link"
+                    style="color:#fff; background:#f00; padding:10px 20px; text-decoration:none; font-weight:900; border-radius:4px; display:inline-block; margin-top:10px; box-shadow: 0 0 20px rgba(255,0,0,0.5)">CLICK_FOR_PROOF</a>
             </div>
             <div class="label">Stakeholder Approval</div>
             <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
             <div class="label">Legal Status</div>
             <div style="font-size:10px;color:#f00">[100% COMPLIANT]</div>
-            <div class="label" style="margin-top:10px">Mission History</div>
-            <div style="font-size:9px" id="audit-trail"><a href="#" target="_blank"
-                    style="color:#fff;text-decoration:underline">Audit Trail (NONE)</a></div>
+            <div class="label" style="margin-top:10px">Master Audit Trail</div>
+            <div style="font-size:9px" id="audit-trail"><a
+                    href="https://testnet.snowtrace.io/address/0x685cd40e2e458affa00fe55e4900e478cb66db70"
+                    target="_blank" style="color:var(--accent);text-decoration:underline">VIEW MASTER HISTORY (d70)</a>
+            </div>
         </div>
         <div id="event-monitor"></div>
         <div id="ctrl-grid">
@@ -574,8 +580,11 @@ void main(){
             document.getElementById('header-disconnect').style.display = 'none';
             document.getElementById('wallet-addr').innerText = 'NOT_CONNECTED';
             document.getElementById('wallet-bal').innerText = '0.00';
-            document.getElementById('v-hash').innerHTML = '<div style="color:#4a5568; font-size:10px; margin-top:10px; font-weight:900;">CONNECT_TO_VERIFY</div>';
-            document.getElementById('audit-trail').innerHTML = `<a href="#" target="_blank" style="color:#fff;text-decoration:underline">Audit Trail (NONE)</a>`;
+
+            // Revert to master proof link
+            document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/address/0x685cd40e2e458affa00fe55e4900e478cb66db70" target="_blank" id="proof-link" style="color:#fff; background:#f00; padding:10px 20px; text-decoration:none; font-weight:900; border-radius:4px; display:inline-block; margin-top:10px; box-shadow: 0 0 20px rgba(255,0,0,0.5)">CLICK_FOR_PROOF</a>`;
+            document.getElementById('audit-trail').innerHTML = `<a href="https://testnet.snowtrace.io/address/0x685cd40e2e458affa00fe55e4900e478cb66db70" target="_blank" style="color:var(--accent);text-decoration:underline">VIEW MASTER HISTORY (d70)</a>`;
+
             modal.classList.remove('modal-active');
             logEvent('WALLET_DISCONNECTED');
             showToast('DISCONNECTED');
