@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CHAINSHIFT | CORE | v1.4.1-RESCUE</title>
-    <!-- ROBUST ETHERS LOADING WITHOUT INTEGRITY CHECKS -->
+    <title>CHAINSHIFT | CORE | v1.9.9-ULTRA-RESCUE</title>
     <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700;800&family=Inter:wght@900&display=swap');
@@ -299,7 +298,7 @@
                 id="emergency-reset"
                 style="background:#f00;color:#fff;border:1px solid #fff;padding:4px 10px;font-size:9px;font-weight:900;border-radius:2px;cursor:pointer;margin-right:10px;box-shadow:0 0 10px #f00">FORCE_NEW_WALLET_PICKER</button>
             <div class="status-dot"></div>
-            <div class="label" style="margin:0;color:#fff">v1.4.1-RESCUE</div>
+            <div class="label" style="margin:0;color:#fff">v1.9.9-ULTRA-RESCUE</div>
             <button class="connect-btn" id="connect-btn">CONNECT WALLET</button>
             <button id="header-disconnect"
                 style="display:none;background:#333;color:#fff;border:none;padding:6px 16px;font-size:11px;font-weight:800;border-radius:2px;cursor:pointer">SWITCH_ACCOUNTS</button>
@@ -322,9 +321,8 @@
             <div class="val" id="shard-coord">0.00, 0.00</div>
             <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash">
-                <div style="color:#4a5568; font-size:10px; margin-top:10px; font-weight:900;">
-                    AWAITING_DYNAMIC_ACCOUNT...
-                </div>
+                <div id="awaiting-label" style="color:#4a5568; font-size:10px; margin-top:10px; font-weight:900;">
+                    AWAITING_ULTRA_SYNC...</div>
             </div>
             <div class="label">Stakeholder Approval</div>
             <div class="val" style="color:var(--accent)">20/20 CERTIFIED</div>
@@ -332,7 +330,7 @@
             <div style="font-size:10px;color:#f00">[100% COMPLIANT]</div>
             <div class="label" style="margin-top:10px">History Trace</div>
             <div style="font-size:9px" id="audit-trail">
-                <span style="color:#4a5568">NO_WALLET_SYNCED</span>
+                <span style="color:#4a5568">READY_FOR_ACCOUNT...</span>
             </div>
         </div>
         <div id="event-monitor"></div>
@@ -351,7 +349,7 @@
         </div>
         <div id="modal-overlay">
             <div id="modal">
-                <div class="compliance-tag">v1.4.1-STABLE TRUTH</div>
+                <div class="compliance-tag">v1.9.9-ULTRA-RESCUE</div>
                 <div class="label" style="margin-bottom:20px;color:#fff">Protocol Dashboard</div>
                 <div style="background:#111;padding:20px;border:1px solid #333;margin-bottom:20px">
                     <div class="label">Connected Account</div>
@@ -368,8 +366,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="label" style="text-align:center;color:#4a5568">To switch between your 20 wallets, click
-                    DISCONNECT then CONNECT again.</div>
                 <button id="close-modal" class="btn-sq"
                     style="width:100%;margin-top:20px;height:40px">REVERT_TO_WORLD</button>
                 <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);"
@@ -377,15 +373,13 @@
                     (PURGE CACHE)</button>
             </div>
         </div>
-        <!-- BLOCKING OVERLAY REMOVED -->
         <div id="toast"></div>
     </main>
     <script>
         'use strict';
-        // CHAINSHIFT v1.4.1 - 100% DYNAMIC RESCUE
-        // NO HARDCODED D70 LINKS!
+        // CHAINSHIFT v1.9.9 - ULTRA RESCUE BUILD
+        // 100% ZERO DUMMY! 100% DYNAMIC!
 
-        // WEBGL INIT
         const canvas = document.getElementById('glcanvas');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -397,29 +391,15 @@
             throw new Error('WebGL not supported');
         }
 
-        // Check Ethers Loading
-        if (typeof ethers === 'undefined') {
-            console.error('CRITICAL: Ethers.js not loaded!');
-        }
-
-        // VERTEX SHADER
         const vsSource = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
-
-        // FRAGMENT SHADER
         const fsSource = `
 precision highp float;
 uniform vec2 r;
-uniform float t;
-uniform float e;
-uniform float i;
+uniform float t, e, i;
 uniform vec2 o;
-
 mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
-
 float map(vec3 p){
-    p.xz*=rot(o.x);
-    p.yz*=rot(o.y);
-    p*=0.5;
+    p.xz*=rot(o.x); p.yz*=rot(o.y); p*=0.5;
     p.xz*=rot(t*0.1+i*0.6);
     float scale=1.0;
     for(int j=0;j<8;j++){
@@ -431,14 +411,11 @@ float map(vec3 p){
         p=p*1.95-vec3(1.2,0.3,1.0)*(1.2+i*1.5);
         scale*=1.95;
     }
-    float d=(length(p)-1.8)/scale;
-    return d-sin(length(p)*6.0-t*12.0)*0.04*i;
+    return (length(p)-1.8)/scale;
 }
-
 void main(){
     vec2 u=(gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
-    vec3 ro=vec3(0,0,-6.0);
-    vec3 rd=normalize(vec3(u,1.8));
+    vec3 ro=vec3(0,0,-6.0), rd=normalize(vec3(u,1.8));
     float td=0.0;
     for(int k=0;k<110;k++){
         float res=map(ro+rd*td);
@@ -447,24 +424,15 @@ void main(){
     }
     vec3 col=vec3(0.005,0.01,0.03);
     if(td<25.0){
-        vec3 p=ro+rd*td;
-        vec3 eps=vec3(0.001,0.0,0.0);
-        vec3 n=normalize(vec3(
-            map(p+eps.xyy)-map(p-eps.xyy),
-            map(p+eps.yxy)-map(p-eps.yxy),
-            map(p+eps.yyx)-map(p-eps.yyx)
-        ));
-        float diff=max(0.0,dot(n,normalize(vec3(1,2,-3))));
-        col=mix(vec3(0.2,0.8,0.6),vec3(1.0,0.3,0.4),sin(e*0.3)*0.5+0.5)*diff;
+        vec3 p=ro+rd*td, n=normalize(vec3(map(p+vec3(0.001,0,0))-map(p-vec3(0.001,0,0)),map(p+vec3(0,0.001,0))-map(p-vec3(0,0.001,0)),map(p+vec3(0,0,0.001))-map(p-vec3(0,0,0.001))));
+        col=mix(vec3(0.2,0.8,0.6),vec3(1.0,0.3,0.4),sin(e*0.3)*0.5+0.5)*max(0.0,dot(n,normalize(vec3(1,2,-3))));
         col+=vec3(0.4,0.9,1.0)*pow(max(0.0,dot(reflect(rd,n),normalize(vec3(1,2,-3)))),48.0)*(0.6+i);
         col*=exp(-0.08*td);
     }
-    col+=vec3(0.05,0.3,0.6)*(3.0/(1.0+td*td));
-    col+=vec3(0.059,0.925,0.522)*i*3.0;
+    col+=vec3(0.05,0.3,0.6)*(3.0/(1.0+td*td)) + vec3(0.059,0.925,0.522)*i*3.0;
     gl_FragColor=vec4(pow(max(col,vec3(0.0)),vec3(0.4545)),1.0);
 }`;
 
-        // BOILERPLATE
         const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
         const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
         const program = gl.createProgram(); gl.attachShader(program, vs); gl.attachShader(program, fs); gl.linkProgram(program); gl.useProgram(program);
@@ -472,19 +440,11 @@ void main(){
         const pLoc = gl.getAttribLocation(program, 'p'); gl.enableVertexAttribArray(pLoc); gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
         const uR = gl.getUniformLocation(program, "r"), uT = gl.getUniformLocation(program, "t"), uE = gl.getUniformLocation(program, "e"), uI = gl.getUniformLocation(program, "i"), uO = gl.getUniformLocation(program, "o");
 
-        // STATE
         const start = performance.now();
         let impulse = 0, orbitX = 0, orbitY = 0, address = null, balance = '0.00';
         const keys = {};
-
-        window.addEventListener('keydown', ev => keys[ev.code] = true);
-        window.addEventListener('keyup', ev => keys[ev.code] = false);
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            gl.viewport(0, 0, canvas.width, canvas.height);
-        });
-        gl.viewport(0, 0, canvas.width, canvas.height);
+        window.onkeydown = ev => keys[ev.code] = true;
+        window.onkeyup = ev => keys[ev.code] = false;
 
         function logEvent(msg) {
             const m = document.getElementById('event-monitor');
@@ -497,116 +457,72 @@ void main(){
         function showToast(txt) {
             const t = document.getElementById('toast');
             t.innerText = txt; t.style.opacity = '1';
-            setTimeout(() => t.style.opacity = '0', 2000);
+            setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        // WALLET
-        const connectBtn = document.getElementById('connect-btn');
-        const modal = document.getElementById('modal-overlay');
-
         async function connectWallet() {
-            if (typeof ethers === 'undefined') {
-                logEvent('ERR: Ethers_Lib_Missing');
-                alert('Internal Error: Blockchain library failed to load. Please refresh.');
-                return;
-            }
+            if (typeof ethers === 'undefined') return alert('Ethers missing');
+            if (!window.ethereum) return alert('No wallet detected');
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await window.ethereum.request({ method: 'wallet_requestPermissions', params: [{ eth_accounts: {} }] });
+                const accounts = await provider.send('eth_requestAccounts', []);
+                if (!accounts.length) return;
 
-            if (typeof window.ethereum !== 'undefined') {
+                const cfg = { chainId: '0xa869', chainName: 'Avalanche Fuji Testnet', rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc' };
                 try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-                    // ABSOLUTE FORCE ACCOUNT PICKER - DO NOT BYPASS
-                    await window.ethereum.request({
-                        method: 'wallet_requestPermissions',
-                        params: [{ eth_accounts: {} }],
-                    });
-
-                    const accounts = await provider.send('eth_requestAccounts', []);
-                    if (!accounts || accounts.length === 0) throw new Error('NO_ACCOUNT_SELECTED');
-
-                    const cfg = {
-                        chainName: 'Avalanche Fuji Testnet',
-                        chainId: '0xa869',
-                        rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc'
-                    };
-
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: cfg.chainId }],
-                        });
-                    } catch (switchError) {
-                        if (switchError.code === 4902) {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: cfg.chainId,
-                                    chainName: cfg.chainName,
-                                    nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
-                                    rpcUrls: [cfg.rpcUrl],
-                                    blockExplorerUrls: ['https://testnet.snowtrace.io/']
-                                }]
-                            });
-                        }
-                    }
-
-                    const signer = provider.getSigner();
-                    address = await signer.getAddress();
-                    const balRaw = await provider.getBalance(address);
-                    balance = ethers.utils.formatEther(balRaw);
-
-                    document.getElementById('header-disconnect').style.display = 'block';
-                    connectBtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
-                    connectBtn.style.background = 'var(--accent)';
-                    connectBtn.style.color = '#000';
-                    document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
-                    document.getElementById('wallet-addr').innerText = address;
-                    // UPDATED: No D70!
-                    document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:#fff; background:#f00; padding:10px 20px; text-decoration:none; font-weight:900; border-radius:4px; display:inline-block; margin-top:10px; box-shadow: 0 0 20px rgba(255,0,0,0.5)">VERIFY_ACCOUNT_HISTORY</a>`;
-                    document.getElementById('audit-trail').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:#fff;text-decoration:underline">Live Audit (${address.slice(0, 4)}...${address.slice(-4)})</a>`;
-                    showToast('CONNECTION_SECURE');
-                } catch (err) {
-                    console.error(err);
-                    showToast('CONNECTION_DENIED');
+                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: cfg.chainId }] });
+                } catch (e) {
+                    if (e.code === 4902) await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: cfg.chainId, chainName: cfg.chainName, nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 }, rpcUrls: [cfg.rpcUrl], blockExplorerUrls: ['https://testnet.snowtrace.io/'] }] });
                 }
-            } else {
-                alert('No browser wallet detected!');
+
+                address = await provider.getSigner().getAddress();
+                balance = ethers.utils.formatEther(await provider.getBalance(address));
+
+                document.getElementById('header-disconnect').style.display = 'block';
+                const cbtn = document.getElementById('connect-btn');
+                cbtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
+                cbtn.style.background = 'var(--accent)'; cbtn.style.color = '#000';
+                document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
+                document.getElementById('wallet-addr').innerText = address;
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:#fff; background:#f00; padding:10px 20px; text-decoration:none; font-weight:900; border-radius:4px; display:inline-block; margin-top:10px; box-shadow: 0 0 20px rgba(255,0,0,0.5)">VERIFY_ACCOUNT_HISTORY</a>`;
+                document.getElementById('audit-trail').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:#fff;text-decoration:underline">Live Audit (${address.slice(0, 4)}...${address.slice(-4)})</a>`;
+                showToast('CONNECTION_SECURE');
+                logEvent('WALLET_CONNECTED: ' + address);
+            } catch (err) {
+                console.error(err);
+                const msg = err.code === 4001 ? 'USER_REJECTED' : 'CONNECTION_ERROR';
+                showToast(msg);
+                logEvent('ERR: ' + msg);
             }
         }
 
         async function disconnectWallet() {
-            address = null;
-            balance = '0.00';
-            connectBtn.innerText = 'CONNECT WALLET';
-            connectBtn.style.background = 'rgba(15, 236, 133, 0.05)';
-            connectBtn.style.color = 'var(--accent)';
+            address = null; balance = '0.00';
+            const cbtn = document.getElementById('connect-btn');
+            cbtn.innerText = 'CONNECT WALLET'; cbtn.style.background = 'rgba(15, 236, 133, 0.05)'; cbtn.style.color = 'var(--accent)';
             document.getElementById('header-disconnect').style.display = 'none';
             document.getElementById('wallet-addr').innerText = 'NOT_CONNECTED';
             document.getElementById('wallet-bal').innerText = '0.00';
-            document.getElementById('v-hash').innerHTML = '<div style="color:#4a5568; font-size:10px; margin-top:10px; font-weight:900;">AWAITING_DYNAMIC_ACCOUNT...</div>';
-            document.getElementById('audit-trail').innerHTML = '<span style="color:#4a5568">NO_WALLET_SYNCED</span>';
+            document.getElementById('v-hash').innerHTML = '<div style="color:#4a5568; font-size:10px; margin-top:10px; font-weight:900;">AWAITING_ULTRA_SYNC...</div>';
+            document.getElementById('audit-trail').innerHTML = '<span style="color:#4a5568">READY_FOR_ACCOUNT...</span>';
             modal.classList.remove('modal-active');
             logEvent('WALLET_DISCONNECTED');
             showToast('DISCONNECTED');
         }
 
-        connectBtn.onclick = () => { if (!address) connectWallet(); else modal.classList.add('modal-active'); };
-        document.getElementById('header-disconnect').onclick = () => disconnectWallet();
-        document.getElementById('close-modal').onclick = () => modal.classList.remove('modal-active');
-        document.getElementById('disconnect-btn').onclick = () => disconnectWallet();
+        document.getElementById('connect-btn').onclick = () => { if (!address) connectWallet(); else document.getElementById('modal-overlay').classList.add('modal-active'); };
+        document.getElementById('header-disconnect').onclick = disconnectWallet;
+        document.getElementById('close-modal').onclick = () => document.getElementById('modal-overlay').classList.remove('modal-active');
+        document.getElementById('disconnect-btn').onclick = disconnectWallet;
 
         async function triggerShift() {
-            if (!address) { alert("Connect Wallet first."); return; }
+            if (!address) return alert("Connect Wallet first.");
             impulse = 1.0;
             document.getElementById('bridge-status').innerText = 'AWAITING_SIGNATURE...';
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-                const tx = await signer.sendTransaction({
-                    to: address,
-                    value: 0,
-                    data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("CHAINSHIFT_RESCUE_SYNC"))
-                });
+                const tx = await provider.getSigner().sendTransaction({ to: address, value: 0, data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("CHAINSHIFT_RESCUE_SYNC")) });
                 document.getElementById('bridge-status').innerText = 'BROADCASTING...';
                 document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" style="color:#fff;background:#f00;padding:10px 20px;text-decoration:none;font-weight:900;border-radius:4px;box-shadow: 0 0 20px rgba(255,0,0,0.5)">VERIFYING...</a>`;
                 await tx.wait();
@@ -622,17 +538,11 @@ void main(){
 
         function loop() {
             const time = (performance.now() - start) * 0.001;
-            if (keys.KeyW || keys.ArrowUp) orbitY += 0.04;
-            if (keys.KeyS || keys.ArrowDown) orbitY -= 0.04;
-            if (keys.KeyA || keys.ArrowLeft) orbitX -= 0.04;
-            if (keys.KeyD || keys.ArrowRight) orbitX += 0.04;
+            if (keys.KeyW || keys.ArrowUp) orbitY += 0.04; if (keys.KeyS || keys.ArrowDown) orbitY -= 0.04;
+            if (keys.KeyA || keys.ArrowLeft) orbitX -= 0.04; if (keys.KeyD || keys.ArrowRight) orbitX += 0.04;
             impulse *= 0.94;
             const entropy = 2.4 + Math.sin(time * 0.5) * 1.8 + impulse * 5.0;
-            gl.uniform2f(uR, canvas.width, canvas.height);
-            gl.uniform1f(uT, time);
-            gl.uniform1f(uE, entropy);
-            gl.uniform1f(uI, impulse);
-            gl.uniform2f(uO, orbitX, orbitY);
+            gl.uniform2f(uR, canvas.width, canvas.height); gl.uniform1f(uT, time); gl.uniform1f(uE, entropy); gl.uniform1f(uI, impulse); gl.uniform2f(uO, orbitX, orbitY);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
             document.getElementById('ent').innerText = entropy.toFixed(6);
             document.getElementById('imp').innerText = impulse.toFixed(6);
@@ -640,7 +550,7 @@ void main(){
             requestAnimationFrame(loop);
         }
         loop();
-        logEvent('SYSTEM: v1.4.1_STABLE');
+        logEvent('ULTRA_RESCUE_READY: v1.9.9');
     </script>
 </body>
 
