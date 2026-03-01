@@ -294,13 +294,15 @@
     <header>
         <div class="logo">CHAIN<span>SHIFT</span></div>
         <div class="nav-right">
-            <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);"
-                style="background:#333;color:#888;border:1px solid #444;padding:4px 10px;font-size:9px;font-weight:800;border-radius:2px;cursor:pointer;margin-right:10px">RESET_CORE</button>
+            <button
+                onclick="localStorage.clear(); sessionStorage.clear(); indexedDB.deleteDatabase('ethers'); location.reload(true);"
+                id="emergency-reset"
+                style="background:#f00;color:#fff;border:1px solid #fff;padding:4px 10px;font-size:9px;font-weight:900;border-radius:2px;cursor:pointer;margin-right:10px;box-shadow:0 0 10px #f00">FORCE_NEW_WALLET_PICKER</button>
             <div class="status-dot"></div>
             <div class="label" style="margin:0;color:#fff">v1.3.1-STABLE</div>
             <button class="connect-btn" id="connect-btn">CONNECT WALLET</button>
             <button id="header-disconnect"
-                style="display:none;background:#f00;color:#fff;border:none;padding:6px 16px;font-size:11px;font-weight:800;border-radius:2px;cursor:pointer">DISCONNECT</button>
+                style="display:none;background:#333;color:#fff;border:none;padding:6px 16px;font-size:11px;font-weight:800;border-radius:2px;cursor:pointer">SWITCH_ACCOUNTS</button>
         </div>
     </header>
     <main>
@@ -514,13 +516,14 @@ void main(){
                 try {
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-                    // FORCE ACCOUNT PICKER
+                    // ABSOLUTE FORCE ACCOUNT PICKER - DO NOT BYPASS
                     await window.ethereum.request({
                         method: 'wallet_requestPermissions',
                         params: [{ eth_accounts: {} }],
                     });
 
-                    await provider.send('eth_requestAccounts', []);
+                    const accounts = await provider.send('eth_requestAccounts', []);
+                    if (!accounts || accounts.length === 0) throw new Error('NO_ACCOUNT_SELECTED');
 
                     const cfg = {
                         chainName: 'Avalanche Fuji Testnet',
