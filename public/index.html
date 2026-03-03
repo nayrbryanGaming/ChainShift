@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CHAINSHIFT | CORE | v3.3.0-ABS-TRUTH-ULTRA</title>
-    <!-- Aggressive cache busting script load -->
-    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js?v=3.3.0"></script>
+    <title>CHAINSHIFT | CORE | v3.4.0</title>
+    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js?v=3.4.0"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700;800&family=Inter:wght@900&display=swap');
 
@@ -55,7 +54,7 @@
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 15px
+            gap: 12px
         }
 
         .status-dot {
@@ -148,13 +147,13 @@
             position: absolute;
             bottom: 20px;
             left: 20px;
-            width: 400px;
+            width: 420px;
             background: var(--panel);
             border: 1px solid var(--border);
             padding: 15px;
             font-size: 10px;
             color: var(--accent);
-            height: 100px;
+            height: 110px;
             overflow: hidden;
             display: flex;
             flex-direction: column-reverse;
@@ -199,12 +198,6 @@
             color: #000
         }
 
-        .action-hub {
-            display: flex;
-            flex-direction: column;
-            gap: 10px
-        }
-
         .btn-main {
             width: 140px;
             height: 40px;
@@ -245,18 +238,6 @@
             display: grid !important
         }
 
-        .compliance-tag {
-            position: absolute;
-            top: -15px;
-            right: 20px;
-            background: #f00;
-            color: #fff;
-            padding: 2px 10px;
-            font-size: 10px;
-            font-weight: 800;
-            transform: skewX(-15deg)
-        }
-
         #toast {
             position: fixed;
             bottom: 40px;
@@ -270,6 +251,24 @@
             opacity: 0;
             transition: 0.3s;
             z-index: 3000
+        }
+
+        #pending-banner {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f00;
+            color: #fff;
+            padding: 12px 28px;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 1px;
+            z-index: 3000;
+            display: none;
+            border-radius: 4px;
+            box-shadow: 0 0 30px #f00;
+            text-align: center
         }
 
         @keyframes pulse {
@@ -299,19 +298,19 @@
             margin-top: 10px;
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
             font-size: 11px;
-            transition: 0.3s;
+            transition: 0.3s
         }
 
         .truth-link:hover {
             background: #ff4444;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8)
         }
 
-        .link-disabled {
+        .link-pending {
             background: #333;
-            color: #666;
-            cursor: not-allowed;
-            box-shadow: none;
+            color: #888;
+            cursor: wait;
+            box-shadow: none
         }
     </style>
 </head>
@@ -320,15 +319,14 @@
     <header>
         <div class="logo">CHAIN<span>SHIFT</span></div>
         <div class="nav-right">
-            <button
-                onclick="localStorage.clear(); sessionStorage.clear(); indexedDB.deleteDatabase('ethers'); location.reload(true);"
-                id="emergency-reset"
-                style="background:#f00;color:#fff;border:1px solid #fff;padding:4px 10px;font-size:9px;font-weight:900;border-radius:2px;cursor:pointer;margin-right:10px;box-shadow:0 0 10px #f00">FORCE_NEW_WALLET_PICKER</button>
+            <button onclick="hardReset()"
+                style="background:#f00;color:#fff;border:1px solid #fff;padding:4px 10px;font-size:9px;font-weight:900;border-radius:2px;cursor:pointer;box-shadow:0 0 10px #f00">FORCE_NEW_WALLET_PICKER</button>
             <div class="status-dot"></div>
-            <div class="label" style="margin:0;color:#fff">v3.3.0-ABS-TRUTH-ULTRA</div>
+            <div class="label" style="margin:0;color:#fff">v3.4.0</div>
             <button class="connect-btn" id="connect-btn">CONNECT WALLET</button>
             <button id="header-disconnect"
-                style="display:none;background:#333;color:#fff;border:none;padding:6px 16px;font-size:11px;font-weight:800;border-radius:2px;cursor:pointer">SWITCH_ACCOUNTS</button>
+                style="display:none;background:#555;color:#fff;border:none;padding:6px 16px;font-size:11px;font-weight:800;border-radius:2px;cursor:pointer"
+                onclick="openModal()">SWITCH ACCOUNT</button>
         </div>
     </header>
     <main>
@@ -348,17 +346,14 @@
             <div class="val" id="shard-coord">0.00, 0.00</div>
             <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash">
-                <!-- ZERO DUMMY: NO LINK UNTIL CONNECTED -->
-                <span class="truth-link link-disabled">AWAITING_ACCOUNT_TRUTH</span>
+                <span class="truth-link link-pending">AWAITING_ACCOUNT_TRUTH</span>
             </div>
             <div class="label">Protocol Status</div>
-            <div class="val" style="color:var(--accent)">100% VERIFIED</div>
-            <div class="label">Truth Audit</div>
-            <div style="font-size:10px;color:var(--accent)">[ZERO_DUMMY_MODE]</div>
+            <div class="val" style="color:var(--accent)">LIVE</div>
+            <div class="label">Network</div>
+            <div style="font-size:10px;color:var(--accent)">[FUJI_TESTNET]</div>
             <div class="label" style="margin-top:10px">History Trace</div>
-            <div style="font-size:9px" id="audit-trail">
-                <span style="color:#4a5568">READY_FOR_ACCOUNT...</span>
-            </div>
+            <div style="font-size:9px" id="audit-trail"><span style="color:#4a5568">CONNECT_TO_VIEW...</span></div>
         </div>
         <div id="event-monitor"></div>
         <div id="ctrl-grid">
@@ -370,13 +365,15 @@
                 <div class="btn-sq" id="down">S</div>
                 <div class="btn-sq" id="right">D</div>
             </div>
-            <div class="action-hub">
+            <div style="display:flex;flex-direction:column;gap:10px">
                 <button class="btn-main" id="shift-btn">EMIT SHIFT</button>
             </div>
         </div>
         <div id="modal-overlay">
             <div id="modal">
-                <div class="compliance-tag">v3.3.0-ABS-TRUTH-ULTRA</div>
+                <div
+                    style="position:absolute;top:-15px;right:20px;background:#f00;color:#fff;padding:2px 10px;font-size:10px;font-weight:800;transform:skewX(-15deg)">
+                    v3.4.0</div>
                 <div class="label" style="margin-bottom:20px;color:#fff">Protocol Dashboard</div>
                 <div style="background:#111;padding:20px;border:1px solid #333;margin-bottom:20px">
                     <div class="label">Connected Account</div>
@@ -387,85 +384,54 @@
                             <div class="label">AVAX_FUEL</div>
                             <div id="wallet-bal" style="color:#fff;font-size:18px">0.00</div>
                         </div>
-                        <div style="text-align:right">
-                            <button id="disconnect-btn"
+                        <div><button id="disconnect-btn"
                                 style="background:#f00;color:#fff;border:none;padding:8px 15px;font-size:10px;font-weight:900;cursor:pointer">DISCONNECT</button>
                         </div>
                     </div>
                 </div>
-                <button id="close-modal" class="btn-sq"
-                    style="width:100%;margin-top:20px;height:40px">REVERT_TO_WORLD</button>
-                <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload(true);"
-                    style="width:100%;margin-top:10px;background:#333;color:#888;border:none;font-size:9px;padding:8px;cursor:pointer;font-weight:bold">HARD_RESET_PROTOCOL
+                <button id="close-modal" class="btn-sq" style="width:100%;margin-top:20px;height:40px">CLOSE</button>
+                <button onclick="hardReset()"
+                    style="width:100%;margin-top:10px;background:#333;color:#888;border:none;font-size:9px;padding:8px;cursor:pointer;font-weight:bold">HARD_RESET
                     (PURGE CACHE)</button>
             </div>
+        </div>
+        <div id="pending-banner" id="pending-banner">
+            ⚠️ WALLET EXTENSION POPUP IS WAITING — CLICK THE WALLET ICON IN YOUR BROWSER TOOLBAR NOW ⚠️
         </div>
         <div id="toast"></div>
     </main>
     <script>
         'use strict';
-        // CHAINSHIFT v3.3.0 - ABSOLUTE TRUTH ULTRA
-        // 100% DYNAMIC | ZERO DUMMY | ZERO HARDCODED D70
+        // CHAINSHIFT v3.4.0 — 100% DYNAMIC | ZERO DUMMY | NO HARDCODED ADDRESS
 
+        // === WebGL Setup ===
         const canvas = document.getElementById('glcanvas');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false }) ||
             canvas.getContext('experimental-webgl', { alpha: false, antialias: false, depth: false });
+        if (!gl) { document.body.innerHTML = '<div style="color:#0fec85;padding:50px;font-size:24px">WebGL not supported.</div>'; throw 0; }
 
-        if (!gl) {
-            document.body.innerHTML = '<div style="color:#0fec85;font-family:monospace;padding:50px;font-size:24px">WebGL not supported.</div>';
-            throw new Error('WebGL not supported');
-        }
-
-        const vsSource = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
-        const fsSource = `
-precision highp float;
-uniform vec2 r;
-uniform float t, e, i;
-uniform vec2 o;
+        const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`); gl.compileShader(vs);
+        const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, `
+precision highp float;uniform vec2 r;uniform float t,e,i;uniform vec2 o;
 mat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
-float map(vec3 p){
-    p.xz*=rot(o.x); p.yz*=rot(o.y); p*=0.5;
-    p.xz*=rot(t*0.1+i*0.6);
-    float scale=1.0;
-    for(int j=0;j<8;j++){
-        p=abs(p)-vec3(0.6,1.4,1.0)*e*0.3;
-        p.xy*=rot(0.1);
-        if(p.x<p.y)p.xy=p.yx;
-        if(p.x<p.z)p.xz=p.zx;
-        if(p.y<p.z)p.yz=p.zy;
-        p=p*1.95-vec3(1.2,0.3,1.0)*(1.2+i*1.5);
-        scale*=1.95;
-    }
-    return (length(p)-1.8)/scale;
-}
-void main(){
-    vec2 u=(gl_FragCoord.xy*2.0-r)/min(r.x,r.y);
-    vec3 ro=vec3(0,0,-6.0), rd=normalize(vec3(u,1.8));
-    float td=0.0;
-    for(int k=0;k<110;k++){
-        float res=map(ro+rd*td);
-        if(res<0.0015||td>25.0)break;
-        td+=res;
-    }
-    vec3 col=vec3(0.005,0.01,0.03);
-    if(td<25.0){
-        vec3 p=ro+rd*td, n=normalize(vec3(map(p+vec3(0.001,0,0))-map(p-vec3(0.001,0,0)),map(p+vec3(0,0.001,0))-map(p-vec3(0,0.001,0)),map(p+vec3(0,0,0.001))-map(p-vec3(0,0,0.001))));
-        col=mix(vec3(0.2,0.8,0.6),vec3(1.0,0.3,0.4),sin(e*0.3)*0.5+0.5)*max(0.0,dot(n,normalize(vec3(1,2,-3))));
-        col+=vec3(0.4,0.9,1.0)*pow(max(0.0,dot(reflect(rd,n),normalize(vec3(1,2,-3)))),48.0)*(0.6+i);
-        col*=exp(-0.08*td);
-    }
-    col+=vec3(0.05,0.3,0.6)*(3.0/(1.0+td*td)) + vec3(0.059,0.925,0.522)*i*3.0;
-    gl_FragColor=vec4(pow(max(col,vec3(0.0)),vec3(0.4545)),1.0);
-}`;
-
-        const vs = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vs, vsSource); gl.compileShader(vs);
-        const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSource); gl.compileShader(fs);
-        const program = gl.createProgram(); gl.attachShader(program, vs); gl.attachShader(program, fs); gl.linkProgram(program); gl.useProgram(program);
+float map(vec3 p){p.xz*=rot(o.x);p.yz*=rot(o.y);p*=0.5;p.xz*=rot(t*.1+i*.6);float sc=1.;
+for(int j=0;j<8;j++){p=abs(p)-vec3(.6,1.4,1.)*e*.3;p.xy*=rot(.1);
+if(p.x<p.y)p.xy=p.yx;if(p.x<p.z)p.xz=p.zx;if(p.y<p.z)p.yz=p.zy;
+p=p*1.95-vec3(1.2,.3,1.)*(1.2+i*1.5);sc*=1.95;}return(length(p)-1.8)/sc;}
+void main(){vec2 u=(gl_FragCoord.xy*2.-r)/min(r.x,r.y);
+vec3 ro=vec3(0,0,-6.),rd=normalize(vec3(u,1.8));float td=0.;
+for(int k=0;k<110;k++){float res=map(ro+rd*td);if(res<.0015||td>25.)break;td+=res;}
+vec3 col=vec3(.005,.01,.03);
+if(td<25.){vec3 p=ro+rd*td,n=normalize(vec3(map(p+vec3(.001,0,0))-map(p-vec3(.001,0,0)),map(p+vec3(0,.001,0))-map(p-vec3(0,.001,0)),map(p+vec3(0,0,.001))-map(p-vec3(0,0,.001))));
+col=mix(vec3(.2,.8,.6),vec3(1.,.3,.4),sin(e*.3)*.5+.5)*max(0.,dot(n,normalize(vec3(1,2,-3))));
+col+=vec3(.4,.9,1.)*pow(max(0.,dot(reflect(rd,n),normalize(vec3(1,2,-3)))),48.)*(0.6+i);col*=exp(-.08*td);}
+col+=vec3(.05,.3,.6)*(3./(1.+td*td))+vec3(.059,.925,.522)*i*3.;
+gl_FragColor=vec4(pow(max(col,vec3(0.)),vec3(.4545)),1.);}`); gl.compileShader(fs);
+        const prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); gl.useProgram(prog);
         const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
-        const pLoc = gl.getAttribLocation(program, 'p'); gl.enableVertexAttribArray(pLoc); gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
-        const uR = gl.getUniformLocation(program, "r"), uT = gl.getUniformLocation(program, "t"), uE = gl.getUniformLocation(program, "e"), uI = gl.getUniformLocation(program, "i"), uO = gl.getUniformLocation(program, "o");
+        const pL = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(pL); gl.vertexAttribPointer(pL, 2, gl.FLOAT, false, 0, 0);
+        const uR = gl.getUniformLocation(prog, 'r'), uT = gl.getUniformLocation(prog, 't'), uE = gl.getUniformLocation(prog, 'e'), uI = gl.getUniformLocation(prog, 'i'), uO = gl.getUniformLocation(prog, 'o');
 
         const start = performance.now();
         let impulse = 0, orbitX = 0, orbitY = 0, address = null, balance = '0.00';
@@ -474,123 +440,138 @@ void main(){
         window.onkeyup = ev => keys[ev.code] = false;
 
         function logEvent(msg) {
-            const m = document.getElementById('event-monitor');
-            const d = document.createElement('div');
-            d.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${msg}`;
-            m.prepend(d);
-            if (m.children.length > 5) m.removeChild(m.lastChild);
+            const m = document.getElementById('event-monitor'), d = document.createElement('div');
+            d.innerHTML = `<span style="color:#4a5568">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            m.prepend(d); if (m.children.length > 6) m.removeChild(m.lastChild);
         }
+        function showToast(txt) { const t = document.getElementById('toast'); t.innerText = txt; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); }
+        function openModal() { document.getElementById('modal-overlay').classList.add('modal-active'); }
+        function hardReset() { localStorage.clear(); sessionStorage.clear(); location.reload(true); }
 
-        function showToast(txt) {
-            const t = document.getElementById('toast');
-            t.innerText = txt; t.style.opacity = '1';
-            setTimeout(() => t.style.opacity = '0', 3000);
-        }
-
+        let connecting = false;
         async function connectWallet() {
-            if (!window.ethereum) return alert('No browser wallet found! Please use a browser with MetaMask or Phantom extension.');
-
+            if (connecting) return;
+            if (!window.ethereum) { alert('No browser wallet found. Please install MetaMask or Phantom.'); return; }
+            connecting = true;
+            document.getElementById('connect-btn').innerText = 'CONNECTING...';
+            logEvent('HANDSHAKE_INIT...');
             try {
-                logEvent('SYSTEM: HANDSHAKE_START...');
-
-                // WATCHDOG: Detect hang and give rescue instructions
-                const watchdog = setTimeout(() => {
-                    if (!address) {
-                        logEvent('HANG_DETECTED: PLEASE OPEN EXTENSION MANUALLY');
-                        showToast('CHECK_EXTENSION_POPUP');
-                    }
-                }, 5000);
-
-                // Use a non-hanging accounts check first
+                // First try non-blocking check for already-approved accounts
                 const existing = await window.ethereum.request({ method: 'eth_accounts' });
                 if (existing && existing.length > 0) {
-                    logEvent('SYSTEM: AUTO_RECOVERING...');
-                    address = existing[0];
+                    await onConnected(existing[0]);
+                    return;
+                }
+                // Request new account approval
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts && accounts.length > 0) {
+                    await onConnected(accounts[0]);
                 } else {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    address = accounts[0];
+                    throw new Error('NO_ACCOUNTS_RETURNED');
                 }
-
-                clearTimeout(watchdog);
-
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const balRaw = await provider.getBalance(address);
-                balance = ethers.utils.formatEther(balRaw);
-
-                // Chain Verification
-                const cfg = { chainId: '0xa869' };
-                try {
-                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: cfg.chainId }] });
-                } catch (sErr) {
-                    if (sErr.code === 4902) {
-                        await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: cfg.chainId, chainName: 'Avalanche Fuji', rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 }, blockExplorerUrls: ['https://testnet.snowtrace.io/'] }] });
-                    }
-                }
-
-                document.getElementById('header-disconnect').style.display = 'block';
-                const cbtn = document.getElementById('connect-btn');
-                cbtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
-                cbtn.style.background = 'var(--accent)'; cbtn.style.color = '#000';
-                document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
-                document.getElementById('wallet-addr').innerText = address;
-
-                // DYNAMIC TRUTH
-                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" class="truth-link">VERIFIED_OWNER_TRUTH</a>`;
-                document.getElementById('audit-trail').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:var(--accent);text-decoration:underline">TRACE: ${address.slice(0, 8)}...</a>`;
-
-                showToast('CONNECTION_STABILIZED');
-                logEvent('ACTIVE: ' + address.slice(0, 8) + '...');
             } catch (err) {
-                logEvent('FAIL: ' + (err.message || 'HANDSHAKE_REJECTED'));
-                showToast('RETRY_RECONNECT');
+                if (err.code === -32002) {
+                    // ALREADY PENDING — Show banner telling user to open the extension
+                    document.getElementById('pending-banner').style.display = 'block';
+                    logEvent('EXTENSION_POPUP_PENDING — Click wallet icon in toolbar!');
+                    showToast('OPEN WALLET EXTENSION NOW');
+                    setTimeout(() => document.getElementById('pending-banner').style.display = 'none', 8000);
+                } else if (err.code === 4001) {
+                    logEvent('USER_REJECTED');
+                    showToast('REJECTED BY USER');
+                } else {
+                    logEvent('ERR: ' + (err.message || err.code || 'UNKNOWN'));
+                    showToast('CONNECT_FAILED');
+                }
+                document.getElementById('connect-btn').innerText = 'CONNECT WALLET';
+            } finally {
+                connecting = false;
             }
         }
 
-        async function disconnectWallet() {
+        async function onConnected(addr) {
+            address = addr;
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const balRaw = await provider.getBalance(address);
+            balance = ethers.utils.formatEther(balRaw);
+
+            // Switch to Fuji
+            try {
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xa869' }] });
+            } catch (sErr) {
+                if (sErr.code === 4902) {
+                    await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: '0xa869', chainName: 'Avalanche Fuji Testnet', rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 }, blockExplorerUrls: ['https://testnet.snowtrace.io/'] }] });
+                }
+            }
+
+            document.getElementById('header-disconnect').style.display = 'block';
+            const cbtn = document.getElementById('connect-btn');
+            cbtn.innerText = address.slice(0, 6) + '...' + address.slice(-4);
+            cbtn.style.background = 'var(--accent)'; cbtn.style.color = '#000';
+            cbtn.onclick = openModal;
+            document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
+            document.getElementById('wallet-addr').innerText = address;
+
+            // 100% DYNAMIC TRUTH — links only show ACTUAL connected wallet
+            document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" class="truth-link">VIEW_MY_ACCOUNT_ON_CHAIN</a>`;
+            document.getElementById('audit-trail').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:var(--accent);text-decoration:underline">TRACE: ${address}</a>`;
+
+            showToast('CONNECTION_SECURE');
+            logEvent('ACTIVE: ' + address);
+        }
+
+        function disconnectWallet() {
             address = null; balance = '0.00';
             const cbtn = document.getElementById('connect-btn');
-            cbtn.innerText = 'CONNECT WALLET'; cbtn.style.background = 'rgba(15, 236, 133, 0.05)'; cbtn.style.color = 'var(--accent)';
+            cbtn.innerText = 'CONNECT WALLET'; cbtn.style.background = 'rgba(15,236,133,0.05)'; cbtn.style.color = 'var(--accent)';
+            cbtn.onclick = connectWallet;
             document.getElementById('header-disconnect').style.display = 'none';
             document.getElementById('wallet-addr').innerText = 'NOT_CONNECTED';
             document.getElementById('wallet-bal').innerText = '0.00';
-            document.getElementById('v-hash').innerHTML = `<span class="truth-link link-disabled">AWAITING_ACCOUNT_TRUTH</span>`;
-            document.getElementById('audit-trail').innerHTML = `<span style="color:#4a5568">READY_FOR_ACCOUNT...</span>`;
+            document.getElementById('v-hash').innerHTML = '<span class="truth-link link-pending">AWAITING_ACCOUNT_TRUTH</span>';
+            document.getElementById('audit-trail').innerHTML = '<span style="color:#4a5568">CONNECT_TO_VIEW...</span>';
             document.getElementById('modal-overlay').classList.remove('modal-active');
             logEvent('DISCONNECTED');
-            showToast('DE-AUTHENTICATED');
+            showToast('DISCONNECTED');
         }
 
-        document.getElementById('connect-btn').onclick = () => { if (!address) connectWallet(); else document.getElementById('modal-overlay').classList.add('modal-active'); };
-        document.getElementById('header-disconnect').onclick = disconnectWallet;
+        document.getElementById('connect-btn').onclick = connectWallet;
+        document.getElementById('header-disconnect').onclick = openModal;
         document.getElementById('close-modal').onclick = () => document.getElementById('modal-overlay').classList.remove('modal-active');
         document.getElementById('disconnect-btn').onclick = disconnectWallet;
 
+        // Listen for account changes (wallet picker switch)
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', async (accs) => {
+                if (accs && accs.length > 0) { await onConnected(accs[0]); }
+                else { disconnectWallet(); }
+            });
+        }
+
         async function triggerShift() {
-            if (!address) return alert("Halt. Connect Wallet.");
+            if (!address) { alert('Connect Wallet first.'); return; }
             impulse = 1.0;
-            document.getElementById('bridge-status').innerText = 'AUTHENTICATING...';
+            document.getElementById('bridge-status').innerText = 'SIGNING...';
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const tx = await provider.getSigner().sendTransaction({ to: address, value: 0, data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("CHAINSHIFT_v3_RESCUE")) });
-                document.getElementById('bridge-status').innerText = 'TRANSMITTING...';
-                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" class="truth-link">MISSION_SYNCING...</a>`;
+                const tx = await provider.getSigner().sendTransaction({ to: address, value: 0, data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes('CHAINSHIFT_v3.4_SHIFT')) });
+                document.getElementById('bridge-status').innerText = 'PROPAGATING...';
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" class="truth-link">TX_BROADCASTING...</a>`;
                 await tx.wait();
                 document.getElementById('bridge-status').innerText = 'SYNCHRONIZED';
                 document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" class="truth-link">CONFIRMED_ON_CHAIN</a>`;
-                showToast('SYNC_COMPLETE');
-            } catch (e) {
-                logEvent('AUTH_FAIL');
-                document.getElementById('bridge-status').innerText = 'INTERRUPTED';
-            }
+                showToast('SHIFT_CONFIRMED');
+            } catch (e) { logEvent('SHIFT_FAILED'); document.getElementById('bridge-status').innerText = 'ABORTED'; }
         }
         document.getElementById('shift-btn').onclick = triggerShift;
 
+        // === Render Loop ===
         function loop() {
-            const time = (performance.now() - start) * 0.001;
+            const time = (performance.now() - start) * .001;
             if (keys.KeyW || keys.ArrowUp) orbitY += 0.04; if (keys.KeyS || keys.ArrowDown) orbitY -= 0.04;
             if (keys.KeyA || keys.ArrowLeft) orbitX -= 0.04; if (keys.KeyD || keys.ArrowRight) orbitX += 0.04;
             impulse *= 0.94;
-            const entropy = 2.4 + Math.sin(time * 0.5) * 1.8 + impulse * 5.0;
+            const entropy = 2.4 + Math.sin(time * 0.5) * 1.8 + impulse * 5;
             gl.uniform2f(uR, canvas.width, canvas.height); gl.uniform1f(uT, time); gl.uniform1f(uE, entropy); gl.uniform1f(uI, impulse); gl.uniform2f(uO, orbitX, orbitY);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
             document.getElementById('ent').innerText = entropy.toFixed(6);
@@ -599,7 +580,7 @@ void main(){
             requestAnimationFrame(loop);
         }
         loop();
-        logEvent('ULTRA_STABLE_v3.3.0_LOADED');
+        logEvent('v3.4.0 LOADED — READY');
     </script>
 </body>
 
