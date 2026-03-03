@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CHAINSHIFT | CORE | v3.2.0-ULTRA-STABLE</title>
+    <title>CHAINSHIFT | CORE | v3.3.0-ABS-TRUTH-ULTRA</title>
     <!-- Aggressive cache busting script load -->
-    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js?v=3.2.0"></script>
+    <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js?v=3.3.0"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700;800&family=Inter:wght@900&display=swap');
 
@@ -325,7 +325,7 @@
                 id="emergency-reset"
                 style="background:#f00;color:#fff;border:1px solid #fff;padding:4px 10px;font-size:9px;font-weight:900;border-radius:2px;cursor:pointer;margin-right:10px;box-shadow:0 0 10px #f00">FORCE_NEW_WALLET_PICKER</button>
             <div class="status-dot"></div>
-            <div class="label" style="margin:0;color:#fff">v3.2.0-ULTRA-STABLE</div>
+            <div class="label" style="margin:0;color:#fff">v3.3.0-ABS-TRUTH-ULTRA</div>
             <button class="connect-btn" id="connect-btn">CONNECT WALLET</button>
             <button id="header-disconnect"
                 style="display:none;background:#333;color:#fff;border:none;padding:6px 16px;font-size:11px;font-weight:800;border-radius:2px;cursor:pointer">SWITCH_ACCOUNTS</button>
@@ -348,13 +348,13 @@
             <div class="val" id="shard-coord">0.00, 0.00</div>
             <div class="label">Mission Verification (REAL)</div>
             <div class="val" id="v-hash">
-                <!-- 100% DYNAMIC: NO DUMMY ADDRESSES ALLOWED -->
+                <!-- ZERO DUMMY: NO LINK UNTIL CONNECTED -->
                 <span class="truth-link link-disabled">AWAITING_ACCOUNT_TRUTH</span>
             </div>
             <div class="label">Protocol Status</div>
             <div class="val" style="color:var(--accent)">100% VERIFIED</div>
             <div class="label">Truth Audit</div>
-            <div style="font-size:10px;color:var(--accent)">[NO_DUMMY_DATA_DETECTED]</div>
+            <div style="font-size:10px;color:var(--accent)">[ZERO_DUMMY_MODE]</div>
             <div class="label" style="margin-top:10px">History Trace</div>
             <div style="font-size:9px" id="audit-trail">
                 <span style="color:#4a5568">READY_FOR_ACCOUNT...</span>
@@ -376,7 +376,7 @@
         </div>
         <div id="modal-overlay">
             <div id="modal">
-                <div class="compliance-tag">v3.2.0-ULTRA-STABLE</div>
+                <div class="compliance-tag">v3.3.0-ABS-TRUTH-ULTRA</div>
                 <div class="label" style="margin-bottom:20px;color:#fff">Protocol Dashboard</div>
                 <div style="background:#111;padding:20px;border:1px solid #333;margin-bottom:20px">
                     <div class="label">Connected Account</div>
@@ -404,7 +404,7 @@
     </main>
     <script>
         'use strict';
-        // CHAINSHIFT v3.2.0 - ULTRA STABLE BUILD
+        // CHAINSHIFT v3.3.0 - ABSOLUTE TRUTH ULTRA
         // 100% DYNAMIC | ZERO DUMMY | ZERO HARDCODED D70
 
         const canvas = document.getElementById('glcanvas');
@@ -487,34 +487,33 @@ void main(){
             setTimeout(() => t.style.opacity = '0', 3000);
         }
 
-        let connectionAttempts = 0;
         async function connectWallet() {
-            if (typeof ethers === 'undefined') return alert('Internal Library Missing. Attempting Refresh...');
             if (!window.ethereum) return alert('No browser wallet found! Please use a browser with MetaMask or Phantom extension.');
 
             try {
-                logEvent('SYSTEM: HANDSHAKE_INIT...');
-                connectionAttempts++;
+                logEvent('SYSTEM: HANDSHAKE_START...');
 
-                // WATCHDOG: Force reload if stuck
-                const timeout = setTimeout(() => {
+                // WATCHDOG: Detect hang and give rescue instructions
+                const watchdog = setTimeout(() => {
                     if (!address) {
-                        logEvent('TIMEOUT: PLEASE RELOAD (F5)');
-                        showToast('SYNC_TIMEOUT');
-                        document.getElementById('connect-btn').innerText = 'RETRY_CONNECT';
+                        logEvent('HANG_DETECTED: PLEASE OPEN EXTENSION MANUALLY');
+                        showToast('CHECK_EXTENSION_POPUP');
                     }
-                }, 10000);
+                }, 5000);
 
-                // Phantom specific check
-                const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                // Use a non-hanging accounts check first
+                const existing = await window.ethereum.request({ method: 'eth_accounts' });
+                if (existing && existing.length > 0) {
+                    logEvent('SYSTEM: AUTO_RECOVERING...');
+                    address = existing[0];
+                } else {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    address = accounts[0];
+                }
 
-                // FORCE ACCOUNT PICKER (Standard eth_requestAccounts)
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                clearTimeout(timeout);
+                clearTimeout(watchdog);
 
-                if (!accounts || accounts.length === 0) throw new Error('NO_ACCOUNT');
-
-                address = accounts[0];
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const balRaw = await provider.getBalance(address);
                 balance = ethers.utils.formatEther(balRaw);
 
@@ -524,7 +523,7 @@ void main(){
                     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: cfg.chainId }] });
                 } catch (sErr) {
                     if (sErr.code === 4902) {
-                        await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: cfg.chainId, chainName: 'Avalanche Fuji Testnet', rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 }, blockExplorerUrls: ['https://testnet.snowtrace.io/'] }] });
+                        await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: cfg.chainId, chainName: 'Avalanche Fuji', rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'], nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 }, blockExplorerUrls: ['https://testnet.snowtrace.io/'] }] });
                     }
                 }
 
@@ -535,16 +534,15 @@ void main(){
                 document.getElementById('wallet-bal').innerText = parseFloat(balance).toFixed(4) + ' AVAX';
                 document.getElementById('wallet-addr').innerText = address;
 
-                // 100% DYNAMIC TRUTH
+                // DYNAMIC TRUTH
                 document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" class="truth-link">VERIFIED_OWNER_TRUTH</a>`;
                 document.getElementById('audit-trail').innerHTML = `<a href="https://testnet.snowtrace.io/address/${address}" target="_blank" style="color:var(--accent);text-decoration:underline">TRACE: ${address.slice(0, 8)}...</a>`;
 
-                showToast('HANDSHAKE_COMPLETE');
-                logEvent('PROTO: ' + address.slice(0, 8) + '... ACTIVE');
+                showToast('CONNECTION_STABILIZED');
+                logEvent('ACTIVE: ' + address.slice(0, 8) + '...');
             } catch (err) {
-                console.error('CONNECT_ERR:', err);
-                logEvent('FAIL: ' + (err.message || 'BLOCKED'));
-                showToast('ERROR: ' + (err.code || 'CONNECT_FAIL'));
+                logEvent('FAIL: ' + (err.message || 'HANDSHAKE_REJECTED'));
+                showToast('RETRY_RECONNECT');
             }
         }
 
@@ -558,8 +556,8 @@ void main(){
             document.getElementById('v-hash').innerHTML = `<span class="truth-link link-disabled">AWAITING_ACCOUNT_TRUTH</span>`;
             document.getElementById('audit-trail').innerHTML = `<span style="color:#4a5568">READY_FOR_ACCOUNT...</span>`;
             document.getElementById('modal-overlay').classList.remove('modal-active');
-            logEvent('PROTO: DISCONNECTED');
-            showToast('DISCONNECTED');
+            logEvent('DISCONNECTED');
+            showToast('DE-AUTHENTICATED');
         }
 
         document.getElementById('connect-btn').onclick = () => { if (!address) connectWallet(); else document.getElementById('modal-overlay').classList.add('modal-active'); };
@@ -568,21 +566,21 @@ void main(){
         document.getElementById('disconnect-btn').onclick = disconnectWallet;
 
         async function triggerShift() {
-            if (!address) return alert("Account not found. Connect first.");
+            if (!address) return alert("Halt. Connect Wallet.");
             impulse = 1.0;
-            document.getElementById('bridge-status').innerText = 'SIGNING...';
+            document.getElementById('bridge-status').innerText = 'AUTHENTICATING...';
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const tx = await provider.getSigner().sendTransaction({ to: address, value: 0, data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("CHAINSHIFT_PROTOCOL_SYNC_v3")) });
-                document.getElementById('bridge-status').innerText = 'PROPAGATING...';
-                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" class="truth-link">BROADCASTING_TRUTH...</a>`;
+                const tx = await provider.getSigner().sendTransaction({ to: address, value: 0, data: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("CHAINSHIFT_v3_RESCUE")) });
+                document.getElementById('bridge-status').innerText = 'TRANSMITTING...';
+                document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" class="truth-link">MISSION_SYNCING...</a>`;
                 await tx.wait();
                 document.getElementById('bridge-status').innerText = 'SYNCHRONIZED';
                 document.getElementById('v-hash').innerHTML = `<a href="https://testnet.snowtrace.io/tx/${tx.hash}" target="_blank" class="truth-link">CONFIRMED_ON_CHAIN</a>`;
-                showToast('SHIFT_CONFIRMED');
+                showToast('SYNC_COMPLETE');
             } catch (e) {
-                logEvent('PROTO: SYNC_FAIL');
-                document.getElementById('bridge-status').innerText = 'ABORTED';
+                logEvent('AUTH_FAIL');
+                document.getElementById('bridge-status').innerText = 'INTERRUPTED';
             }
         }
         document.getElementById('shift-btn').onclick = triggerShift;
@@ -601,7 +599,7 @@ void main(){
             requestAnimationFrame(loop);
         }
         loop();
-        logEvent('ULTRA_STABLE_ACTIVE: v3.2.0');
+        logEvent('ULTRA_STABLE_v3.3.0_LOADED');
     </script>
 </body>
 
